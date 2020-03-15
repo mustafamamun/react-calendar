@@ -22,7 +22,8 @@
     "eject": "react-scripts eject"
   },
   "resolutions": {
-    "acorn": "^5.7.4"
+    "acorn": "^5.7.4",
+    "minimist": "^1.2.2"
   },
   "eslintConfig": {
     "extends": "react-app"
