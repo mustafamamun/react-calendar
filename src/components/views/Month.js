@@ -1,9 +1,10 @@
 import React, { useContext } from 'react';
-import { eachDayOfInterval } from 'date-fns';
+import { eachDayOfInterval, isBefore, startOfDay } from 'date-fns';
 import { Grid, GridColumn, GridRow } from 'semantic-ui-react';
 
 import { CalContext } from '../../context/Context';
 import { getDate } from 'date-fns/esm';
+import WeekRow from '../week-row/WeekRow';
 
 const Month = () => {
   const { viewWindow } = useContext(CalContext);
@@ -13,10 +14,20 @@ const Month = () => {
   });
   return (
     <Grid columns={7}>
-      <GridRow>
+      <WeekRow />
+      <GridRow className={'pt-0'}>
         {eachDay.map(day => {
           const date = getDate(day);
-          return <GridColumn>{date}</GridColumn>;
+          return (
+            <GridColumn
+              key={day.toISOString()}
+              className={`month-day ${
+                isBefore(day, startOfDay(new Date())) ? 'disable' : ''
+              }`}
+            >
+              {date}
+            </GridColumn>
+          );
         })}
       </GridRow>
     </Grid>

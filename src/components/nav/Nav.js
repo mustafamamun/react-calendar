@@ -15,11 +15,23 @@ import {
   subDays,
   addMonths,
   addWeeks,
-  addDays
+  addDays,
+  getMonth,
+  getYear,
+  getDate,
+  getDay
 } from 'date-fns';
+import { months, daysInWeek } from '../utils';
 
 const Nav = () => {
   const { viewWindow, view, setViewWindow, setView } = useContext(CalContext);
+  const addOneWeek = date => addWeeks(date, 1);
+  const addOneMonth = date => addMonths(date, 1);
+  const addOneDay = date => addDays(date, 1);
+  const subOneWeek = date => subWeeks(date, 1);
+  const subOneMonth = date => subMonths(date, 1);
+  const subOneDay = date => subDays(date, 1);
+
   const setWeekView = () => {
     setView('week');
     setViewWindow({
@@ -70,20 +82,30 @@ const Nav = () => {
   const onBack = () => {
     if (view === 'month' || view === 'agenda') {
       setViewWindow({
-        start: flow(startOfMonth, startOfWeek)(subMonths(viewWindow.start, 1)),
-        end: flow(endOfMonth, endOfWeek)(subMonths(viewWindow.start, 1))
+        start: flow(
+          addOneWeek,
+          subOneMonth,
+          startOfMonth,
+          startOfWeek
+        )(viewWindow.start),
+        end: flow(
+          addOneWeek,
+          subOneMonth,
+          endOfMonth,
+          endOfWeek
+        )(viewWindow.start)
       });
     }
     if (view === 'week') {
       setViewWindow({
-        start: startOfWeek(subWeeks(viewWindow.start, 1)),
-        end: endOfWeek(subWeeks(viewWindow.start, 1))
+        start: flow(subOneWeek, startOfWeek)(viewWindow.start),
+        end: flow(subOneWeek, endOfWeek)(viewWindow.start)
       });
     }
     if (view === 'day') {
       setViewWindow({
-        start: startOfDay(subDays(viewWindow.start, 1)),
-        end: endOfDay(subDays(viewWindow.start, 1))
+        start: flow(subOneDay, startOfDay)(viewWindow.start),
+        end: flow(subOneDay, endOfDay)(viewWindow.start)
       });
     }
   };
@@ -91,20 +113,30 @@ const Nav = () => {
   const onNext = () => {
     if (view === 'month' || view === 'agenda') {
       setViewWindow({
-        start: flow(startOfMonth, startOfWeek)(addMonths(viewWindow.start, 1)),
-        end: flow(endOfMonth, endOfWeek)(addMonths(viewWindow.start, 1))
+        start: flow(
+          addOneWeek,
+          addOneMonth,
+          startOfMonth,
+          startOfWeek
+        )(viewWindow.start),
+        end: flow(
+          addOneWeek,
+          addOneMonth,
+          endOfMonth,
+          endOfWeek
+        )(viewWindow.start)
       });
     }
     if (view === 'week') {
       setViewWindow({
-        start: startOfWeek(addWeeks(viewWindow.start, 1)),
-        end: endOfWeek(addWeeks(viewWindow.start, 1))
+        start: flow(addOneWeek, startOfWeek)(viewWindow.start),
+        end: flow(addOneWeek, endOfWeek)(viewWindow.start)
       });
     }
     if (view === 'day') {
       setViewWindow({
-        start: startOfDay(addDays(viewWindow.start, 1)),
-        end: endOfDay(addDays(viewWindow.start, 1))
+        start: flow(addOneDay, startOfDay)(viewWindow.start),
+        end: flow(addOneDay, endOfDay)(viewWindow.start)
       });
     }
   };
@@ -115,7 +147,7 @@ const Nav = () => {
         <GridColumn
           width={1}
           as={Button}
-          className="pr-0 pl-0"
+          className="pr-0 pl-0 m-0"
           onClick={setToday}
         >
           Today
@@ -123,7 +155,7 @@ const Nav = () => {
         <GridColumn
           width={1}
           as={Button}
-          className="pr-0 pl-0"
+          className="pr-0 pl-0 m-0"
           onClick={onBack}
         >
           Back
@@ -131,22 +163,48 @@ const Nav = () => {
         <GridColumn
           width={1}
           as={Button}
-          className="pr-0 pl-0"
+          className="pr-0 pl-0 m-0"
           onClick={onNext}
         >
           Next
         </GridColumn>
         <GridColumn
-          width={8}
+          width={9}
           as={'div'}
-          className={'nav-text-center pr-0 pl-0'}
+          className={'nav-text-center pr-0 pl-0 m-0'}
         >
-          Tuesday Mar 24
+          {view === 'month' && (
+            <b>
+              {months[getMonth(addOneWeek(viewWindow.start))]}{' '}
+              {getYear(addOneWeek(viewWindow.start))}
+            </b>
+          )}
+          {view === 'week' && (
+            <b>
+              {months[getMonth(viewWindow.start)]}{' '}
+              {getDate(viewWindow.start) < 10
+                ? `0${getDate(viewWindow.start)}`
+                : getDate(viewWindow.start)}{' '}
+              -{' '}
+              {getDate(viewWindow.end) < 10
+                ? `0${getDate(viewWindow.end)}`
+                : getDate(viewWindow.end)}
+            </b>
+          )}
+          {view === 'day' && (
+            <b>
+              {daysInWeek[getDay(viewWindow.start)]}{' '}
+              {months[getMonth(viewWindow.start)]}{' '}
+              {getDate(viewWindow.start) < 10
+                ? `0${getDate(viewWindow.start)}`
+                : getDate(viewWindow.start)}
+            </b>
+          )}
         </GridColumn>
         <GridColumn
           width={1}
           as={Button}
-          className="pr-0 pl-0"
+          className="pr-0 pl-0 m-0"
           onClick={setMonthView}
         >
           Month
@@ -154,7 +212,7 @@ const Nav = () => {
         <GridColumn
           width={1}
           as={Button}
-          className="pr-0 pl-0"
+          className="pr-0 pl-0 m-0"
           onClick={setWeekView}
         >
           Week
@@ -162,7 +220,7 @@ const Nav = () => {
         <GridColumn
           width={1}
           as={Button}
-          className="pr-0 pl-0"
+          className="pr-0 pl-0 m-0"
           onClick={setDayView}
         >
           Day
@@ -170,7 +228,7 @@ const Nav = () => {
         <GridColumn
           width={1}
           as={Button}
-          className="pr-0 pl-0"
+          className="pr-0 pl-0 m-0"
           onClick={setAgendaView}
         >
           Agenda

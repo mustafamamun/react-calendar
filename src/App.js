@@ -6,7 +6,7 @@ import Views from './components/views/IndexView';
 
 function App() {
   return (
-    <Context>
+    <Context defaultView={'week'}>
       <Container className="mt-5">
         <Nav />
         <Views />
