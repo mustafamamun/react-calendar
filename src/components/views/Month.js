@@ -6,7 +6,7 @@ import { CalContext } from '../../context/Context';
 import { getDate } from 'date-fns/esm';
 import WeekRow from '../week-row/WeekRow';
 
-const Month = () => {
+const Month = ({ currentTime }) => {
   const { viewWindow } = useContext(CalContext);
   const eachDay = eachDayOfInterval({
     start: viewWindow.start,
@@ -22,7 +22,7 @@ const Month = () => {
             <GridColumn
               key={day.toISOString()}
               className={`month-day ${
-                isBefore(day, startOfDay(new Date())) ? 'disable' : ''
+                isBefore(day, startOfDay(currentTime)) ? 'disable' : ''
               }`}
             >
               {date}

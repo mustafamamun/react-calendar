@@ -5,7 +5,7 @@ import { getDate } from 'date-fns';
 
 const WeekRowWithDate = ({ allDates }) => {
   return (
-    <GridRow className={'pb-0 pr-1'}>
+    <GridRow className={'pb-0 pr-1 wk-day-name-row'}>
       <GridColumn className={'day-in-week'}>
         <b>Times</b>
       </GridColumn>

@@ -15,7 +15,7 @@
 }
 
 .pr-1 {
-  padding-right: 1vh !important;
+  padding-right: 0.8vh !important;
 }
 .pl-0 {
   padding-left: 0 !important;
@@ -35,11 +35,14 @@
   border: 1px solid#DDDDDD;
   text-align: right;
 }
-
+.wk-day-name-row {
+  padding-top: 0 !important;
+  border: 1px solid#DDDDDD;
+}
 .day-in-week {
   text-align: center;
   font-weight: bold;
-  border: 1px solid#DDDDDD;
+  border-right: 1px solid#DDDDDD;
 }
 .time-slot {
   text-align: center;
@@ -82,10 +85,30 @@
 }
 
 .first-half-an-hour {
+  position: relative;
   height: 25px;
 }
 
 .last-half-an-hour {
+  position: relative;
   height: 24px;
   border-top: 1px solid #f7f7f7;
+}
+
+.selected {
+  background-color: #a7c8f4;
+}
+
+::-moz-selection {
+  color: white;
+}
+::selection {
+  color: white;
+}
+
+.show-selection {
+  color: white;
+  font-size: xx-small;
+  line-height: normal;
+  font-weight: bold;
 }

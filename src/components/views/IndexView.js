@@ -4,19 +4,19 @@ import Month from './Month';
 import Week from './Week';
 import Day from './Day';
 import Agenda from './Agenda';
-const IndexView = () => {
+const IndexView = ({ ...props }) => {
   const { view } = useContext(CalContext);
   if (view === 'month') {
-    return <Month />;
+    return <Month {...props} />;
   }
   if (view === 'week') {
-    return <Week />;
+    return <Week {...props} />;
   }
   if (view === 'day') {
-    return <Day />;
+    return <Day {...props} />;
   }
   if (view === 'agenda') {
-    return <Agenda />;
+    return <Agenda {...props} />;
   }
 };
 
