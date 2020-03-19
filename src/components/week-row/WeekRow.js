@@ -4,7 +4,7 @@ import { daysInWeek } from '../utils';
 
 const WeekRow = () => {
   return (
-    <GridRow className={'pb-0'}>
+    <GridRow className={'p-0 m-0 month-heading'}>
       {daysInWeek.map(day => {
         return (
           <GridColumn key={day} className={'day-in-week'}>

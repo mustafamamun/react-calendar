@@ -11,7 +11,7 @@ function App() {
     setCurrentTime(new Date());
   }, 5 * 60 * 1000);
   return (
-    <Context defaultView={'day'}>
+    <Context defaultView={'month'}>
       <Container className="mt-5">
         <Nav />
         <Views currentTime={currentTime} />

@@ -136,3 +136,7 @@
   font-weight: bold;
   border-right: 1px solid#DDDDDD;
 }
+
+.month-heading {
+  border: 1px solid#DDDDDD;
+}
