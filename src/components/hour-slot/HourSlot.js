@@ -5,12 +5,9 @@ import {
   startOfHour,
   startOfMinute,
   addMinutes,
-  isWithinInterval,
-  getMinutes,
   isAfter,
   isSameMinute,
-  isBefore,
-  getHours
+  isBefore
 } from 'date-fns';
 import HalfAnHourSlot from './HalfAnHourSlot';
 
@@ -25,15 +22,6 @@ const HourSlot = ({
 }) => {
   const firstSlotStartHour = startOfHour(addHours(day, hour));
   const secondSlotStartHour = startOfMinute(addMinutes(firstSlotStartHour, 30));
-  const currentTiemBarStyle = {
-    position: 'absolute',
-    color: 'red',
-    backgroundColor: 'red',
-    height: '1px',
-    margin: 0,
-    width: '100%',
-    top: `${Math.floor(((getMinutes(currentTime) % 30) / 30) * 24)}px`
-  };
   const ifSlotSelected = slotStart => {
     return (
       !isEmpty(selectedWindow) &&

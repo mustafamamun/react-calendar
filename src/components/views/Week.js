@@ -12,6 +12,7 @@ const Week = ({ currentTime }) => {
   const { viewWindow } = useContext(CalContext);
   const [selectedWindow, setSelectedWindow] = useState({});
   const onMouseClick = e => {
+    e.preventDefault();
     setSelectedWindow({
       start: e.target.id,
       end: addMinutes(new Date(e.target.id), '30').toString()

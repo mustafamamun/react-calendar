@@ -107,8 +107,32 @@
 }
 
 .show-selection {
+  text-align: center;
   color: white;
   font-size: xx-small;
   line-height: normal;
   font-weight: bold;
+}
+
+.day-container {
+  height: 80vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  border-bottom: 1px solid#DDDDDD;
+}
+
+.day-heading {
+  border: 1px solid#DDDDDD;
+}
+
+.day-time-slots {
+  border-right: 1px solid#DDDDDD;
+}
+
+.times-heading {
+  padding: 15px;
+  height: 50px;
+  text-align: center;
+  font-weight: bold;
+  border-right: 1px solid#DDDDDD;
 }
