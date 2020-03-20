@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { eachDayOfInterval, addMinutes, isBefore } from 'date-fns';
+import { eachDayOfInterval, addMinutes, isBefore, isSameDay } from 'date-fns';
 import { isEmpty } from 'lodash';
 
 import { CalContext } from '../../context/Context';
@@ -60,7 +60,12 @@ const Week = ({ currentTime }) => {
         </GridColumn>
         {eachDayInWeek.map(day => {
           return (
-            <GridColumn key={day.toISOString()} className="p-0 day-column">
+            <GridColumn
+              key={day.toISOString()}
+              className={`p-0 day-column ${
+                isSameDay(day, new Date()) ? 'same-day-wk' : ''
+              }`}
+            >
               <TimeSlotsInDay
                 day={day}
                 currentTime={currentTime}

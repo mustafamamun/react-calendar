@@ -4,11 +4,11 @@ import { Grid, GridRow, GridColumn } from 'semantic-ui-react';
 import TimeSlotsInDay from '../time-slots-in-day/TimeSlotsInDay';
 import { CalContext } from '../../context/Context';
 
-import { timeSlots } from '../utils';
-import { addMinutes, isBefore } from 'date-fns';
-import { isEmpty } from 'lodash';
+import { timeSlots, getEventsOfTheDay } from '../utils';
+import { addMinutes, isBefore, isSameDay } from 'date-fns';
+import { isEmpty, sortBy } from 'lodash';
 
-const Day = ({ currentTime }) => {
+const Day = ({ currentTime, events }) => {
   const { viewWindow } = useContext(CalContext);
   const [selectedWindow, setSelectedWindow] = useState({});
   const onMouseClick = e => {
@@ -40,6 +40,12 @@ const Day = ({ currentTime }) => {
       });
     }
   };
+  const sortedEvents = sortBy(events, 'start');
+  const eventsOfTheDay = getEventsOfTheDay(
+    new Date(viewWindow.start),
+    sortedEvents
+  );
+
   return (
     <Grid>
       <GridRow className={'p-0 m-0 day-heading pr-1'}>
@@ -58,7 +64,12 @@ const Day = ({ currentTime }) => {
             );
           })}
         </GridColumn>
-        <GridColumn width={13} className={'pr-0 pl-0'}>
+        <GridColumn
+          width={13}
+          className={`pr-0 pl-0 ${
+            isSameDay(new Date(viewWindow.start), new Date()) ? 'same-day' : ''
+          }`}
+        >
           <TimeSlotsInDay
             day={new Date(viewWindow.start)}
             currentTime={currentTime}
@@ -66,6 +77,7 @@ const Day = ({ currentTime }) => {
             onMouseClick={onMouseClick}
             onMouseOver={onMouseOver}
             onMouseUp={onMouseUp}
+            events={eventsOfTheDay}
           />
         </GridColumn>
       </GridRow>

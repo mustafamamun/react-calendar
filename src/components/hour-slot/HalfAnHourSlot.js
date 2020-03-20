@@ -6,11 +6,14 @@ import {
   isWithinInterval,
   addMinutes
 } from 'date-fns';
+import { isEmpty } from 'lodash';
+import { getEventOfTheSlot } from '../utils';
 
 const HalfAnHourSlot = ({
   currentTime,
   slotStart,
   selectedWindow,
+  events,
   ...rest
 }) => {
   const currentTiemBarStyle = {
@@ -22,6 +25,8 @@ const HalfAnHourSlot = ({
     width: '100%',
     top: `${Math.floor(((getMinutes(currentTime) % 30) / 30) * 24)}px`
   };
+  const eventsOfTheSlot = getEventOfTheSlot(slotStart, events);
+
   return (
     <div {...rest}>
       {isSameMinute(slotStart, new Date(selectedWindow.start)) && (

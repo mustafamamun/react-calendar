@@ -1,7 +1,7 @@
 import React from 'react';
 import { GridRow, GridColumn } from 'semantic-ui-react';
 import { daysInWeek } from '../utils';
-import { getDate } from 'date-fns';
+import { getDate, isSameDay } from 'date-fns';
 
 const WeekRowWithDate = ({ allDates }) => {
   return (
@@ -11,7 +11,12 @@ const WeekRowWithDate = ({ allDates }) => {
       </GridColumn>
       {daysInWeek.map((day, i) => {
         return (
-          <GridColumn key={day} className={'day-in-week'}>
+          <GridColumn
+            key={day}
+            className={`day-in-week ${
+              isSameDay(allDates[i], new Date()) ? 'same-day-wk-header' : ''
+            }`}
+          >
             <b>
               {getDate(allDates[i]) < 10
                 ? `0${getDate(allDates[i])}`

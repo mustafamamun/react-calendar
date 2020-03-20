@@ -1,4 +1,23 @@
+import {
+  isSameSecond,
+  startOfDay,
+  endOfDay,
+  addMinutes,
+  isAfter,
+  isBefore
+} from 'date-fns';
+
 export const daysInWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+export const daysFullInWeek = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday'
+];
 
 export const months = [
   'January',
@@ -41,3 +60,37 @@ export const timeSlots = [
   '22:00',
   '23:00'
 ];
+
+export const getEventsOfTheDay = (day, events) => {
+  return events.filter(e => {
+    return (
+      isSameSecond(day, new Date(e.start)) ||
+      (isAfter(startOfDay(day), new Date(e.start)) &&
+        isBefore(startOfDay(day), new Date(e.end)) &&
+        isAfter(endOfDay(day), new Date(e.start)) &&
+        isBefore(endOfDay(day), new Date(e.end))) ||
+      (isAfter(new Date(e.start), startOfDay(day)) &&
+        isBefore(new Date(e.start), endOfDay(day))) ||
+      (isAfter(new Date(e.end), startOfDay(day)) &&
+        isBefore(new Date(e.end), endOfDay(day)))
+    );
+  });
+};
+
+export const getEventOfTheSlot = (slotStart, events) => {
+  const slotEnd = addMinutes(slotStart, 30);
+
+  return events.filter(e => {
+    return (
+      isSameSecond(slotStart, new Date(e.start)) ||
+      (isAfter(slotStart, new Date(e.start)) &&
+        isBefore(slotStart, new Date(e.end)) &&
+        isAfter(slotEnd, new Date(e.start)) &&
+        isBefore(slotEnd, new Date(e.end))) ||
+      (isAfter(new Date(e.start), slotStart) &&
+        isBefore(new Date(e.start), slotEnd)) ||
+      (isAfter(new Date(e.end), slotStart) &&
+        isBefore(new Date(e.end), slotEnd))
+    );
+  });
+};

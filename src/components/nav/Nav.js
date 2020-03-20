@@ -21,7 +21,7 @@ import {
   getDate,
   getDay
 } from 'date-fns';
-import { months, daysInWeek } from '../utils';
+import { months, daysFullInWeek } from '../utils';
 
 const Nav = () => {
   const { viewWindow, view, setViewWindow, setView } = useContext(CalContext);
@@ -65,7 +65,7 @@ const Nav = () => {
         end: flow(endOfMonth, endOfWeek)(new Date())
       });
     }
-    if (view === 'Week') {
+    if (view === 'week') {
       setViewWindow({
         start: startOfWeek(new Date()),
         end: endOfWeek(new Date())
@@ -193,7 +193,7 @@ const Nav = () => {
           )}
           {view === 'day' && (
             <b>
-              {daysInWeek[getDay(viewWindow.start)]}{' '}
+              {daysFullInWeek[getDay(viewWindow.start)]}{' '}
               {months[getMonth(viewWindow.start)]}{' '}
               {getDate(viewWindow.start) < 10
                 ? `0${getDate(viewWindow.start)}`
