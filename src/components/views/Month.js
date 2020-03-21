@@ -7,11 +7,13 @@ import {
   isAfter,
   isSameDay,
   isWithinInterval,
-  endOfDay
+  endOfDay,
+  startOfMonth,
+  startOfWeek
 } from 'date-fns';
 import { Grid, GridColumn, GridRow } from 'semantic-ui-react';
 import { getDate } from 'date-fns/esm';
-import { isEmpty, sortBy, slice } from 'lodash';
+import { isEmpty, sortBy, slice, flow } from 'lodash';
 
 import WeekRow from '../week-row/WeekRow';
 import { CalContext } from '../../context/Context';
@@ -66,8 +68,6 @@ const Month = ({ currentTime, events }) => {
   };
   const sortedEvents = sortBy(events, 'start');
   const isEventStartOnDay = (e, day) => {
-    console.log(e);
-    console.log(day);
     return (
       isSameMinute(startOfDay(day), new Date(e.start)) ||
       isWithinInterval(new Date(e.start), {
@@ -77,9 +77,6 @@ const Month = ({ currentTime, events }) => {
     );
   };
   const isEventEndOnDay = (e, day) => {
-    // console.log(e);
-    // console.log(day);
-
     return (
       isSameMinute(endOfDay(day), new Date(e.end)) ||
       isWithinInterval(new Date(e.end), {
@@ -95,7 +92,6 @@ const Month = ({ currentTime, events }) => {
   const onEventClicked = e => {
     console.log(e);
   };
-  console.log(eachDay);
 
   return (
     <Grid columns={7}>
@@ -138,7 +134,22 @@ const Month = ({ currentTime, events }) => {
                     } ${isEventEndOnDay(e, day) ? 'event-end' : ''}`}
                     key={e.title}
                   >
-                    {isEventStartOnDay(e, day) && <span>{e.title}</span>}
+                    {(isEventStartOnDay(e, day) ||
+                      (isSameDay(day, flow(startOfMonth, startOfWeek)(day)) &&
+                        isBefore(
+                          new Date(e.start),
+                          flow(startOfMonth, startOfWeek)(day)
+                        ))) && (
+                      <div
+                        style={{
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                          textOverflow: 'ellipsis'
+                        }}
+                      >
+                        {e.title}
+                      </div>
+                    )}
                   </div>
                 );
               })}

@@ -8,7 +8,7 @@ import { Grid, GridRow, GridColumn } from 'semantic-ui-react';
 import { timeSlots } from '../utils';
 import TimeSlotsInDay from '../time-slots-in-day/TimeSlotsInDay';
 
-const Week = ({ currentTime }) => {
+const Week = ({ currentTime, events }) => {
   const { viewWindow } = useContext(CalContext);
   const [selectedWindow, setSelectedWindow] = useState({});
   const onMouseClick = e => {
@@ -23,8 +23,10 @@ const Week = ({ currentTime }) => {
     end: viewWindow.end
   });
   const onMouseUp = e => {
-    console.log(selectedWindow);
-    setSelectedWindow({});
+    if (!isEmpty(selectedWindow)) {
+      console.log(selectedWindow);
+      setSelectedWindow({});
+    }
   };
   const onMouseOver = e => {
     if (
@@ -44,7 +46,9 @@ const Week = ({ currentTime }) => {
       });
     }
   };
-
+  const onClickEvent = e => {
+    console.log(e);
+  };
   return (
     <Grid columns={8}>
       <WeekRowWithDate allDates={eachDayInWeek} />
@@ -73,6 +77,8 @@ const Week = ({ currentTime }) => {
                 onMouseClick={onMouseClick}
                 onMouseOver={onMouseOver}
                 onMouseUp={onMouseUp}
+                events={events}
+                onClickEvent={onClickEvent}
               />
             </GridColumn>
           );

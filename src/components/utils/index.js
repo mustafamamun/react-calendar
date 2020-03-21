@@ -4,7 +4,8 @@ import {
   endOfDay,
   addMinutes,
   isAfter,
-  isBefore
+  isBefore,
+  isSameMinute
 } from 'date-fns';
 
 export const daysInWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -87,10 +88,12 @@ export const getEventOfTheSlot = (slotStart, events) => {
         isBefore(slotStart, new Date(e.end)) &&
         isAfter(slotEnd, new Date(e.start)) &&
         isBefore(slotEnd, new Date(e.end))) ||
-      (isAfter(new Date(e.start), slotStart) &&
+      ((isAfter(new Date(e.start), slotStart) ||
+        isSameMinute(new Date(e.start), slotStart)) &&
         isBefore(new Date(e.start), slotEnd)) ||
       (isAfter(new Date(e.end), slotStart) &&
-        isBefore(new Date(e.end), slotEnd))
+        (isBefore(new Date(e.end), slotEnd),
+        isSameMinute(slotEnd, new Date(e.end))))
     );
   });
 };

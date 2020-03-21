@@ -4,9 +4,10 @@ import {
   isSameMinute,
   format,
   isWithinInterval,
-  addMinutes
+  addMinutes,
+  isSameSecond,
+  startOfDay
 } from 'date-fns';
-import { isEmpty } from 'lodash';
 import { getEventOfTheSlot } from '../utils';
 
 const HalfAnHourSlot = ({
@@ -14,6 +15,7 @@ const HalfAnHourSlot = ({
   slotStart,
   selectedWindow,
   events,
+  onClickEvent,
   ...rest
 }) => {
   const currentTiemBarStyle = {
@@ -26,7 +28,24 @@ const HalfAnHourSlot = ({
     top: `${Math.floor(((getMinutes(currentTime) % 30) / 30) * 24)}px`
   };
   const eventsOfTheSlot = getEventOfTheSlot(slotStart, events);
-
+  const isEventStartOnSlot = (e, slotStart) => {
+    return (
+      isSameSecond(new Date(slotStart), new Date(e.start)) ||
+      isWithinInterval(new Date(e.start), {
+        start: slotStart,
+        end: addMinutes(slotStart, 30)
+      })
+    );
+  };
+  const isEventEndOnSlot = (e, day) => {
+    return (
+      isSameSecond(addMinutes(slotStart, 30), new Date(e.end)) ||
+      isWithinInterval(new Date(e.end), {
+        start: slotStart,
+        end: addMinutes(slotStart, 30)
+      })
+    );
+  };
   return (
     <div {...rest}>
       {isSameMinute(slotStart, new Date(selectedWindow.start)) && (
@@ -45,6 +64,35 @@ const HalfAnHourSlot = ({
       ) : (
         ''
       )}
+      {eventsOfTheSlot.map(e => {
+        return (
+          <div
+            key={e.title}
+            style={{ width: `${100 / eventsOfTheSlot.length}%` }}
+            className={`evnet-basic-slot ${
+              isEventStartOnSlot(e, slotStart) ? 'event-start-slot' : ''
+            } ${isEventEndOnSlot(e, slotStart) ? 'event-end-slot' : ''}`}
+            onMouseDown={event => {
+              event.stopPropagation();
+              onClickEvent(e);
+            }}
+          >
+            {' '}
+            {(isEventStartOnSlot(e, slotStart) ||
+              isSameMinute(startOfDay(slotStart), slotStart)) && (
+              <div
+                style={{
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis'
+                }}
+              >
+                {e.title}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };

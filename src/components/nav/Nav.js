@@ -40,11 +40,13 @@ const Nav = () => {
     });
   };
   const setMonthView = () => {
-    setView('month');
-    setViewWindow({
-      start: flow(startOfMonth, startOfWeek)(viewWindow.start),
-      end: flow(endOfMonth, endOfWeek)(viewWindow.start)
-    });
+    if (view !== 'month') {
+      setView('month');
+      setViewWindow({
+        start: flow(startOfMonth, startOfWeek)(viewWindow.start),
+        end: flow(endOfMonth, endOfWeek)(viewWindow.start)
+      });
+    }
   };
   const setDayView = () => {
     setView('day');
@@ -186,6 +188,9 @@ const Nav = () => {
                 ? `0${getDate(viewWindow.start)}`
                 : getDate(viewWindow.start)}{' '}
               -{' '}
+              {getMonth(viewWindow.start) !== getMonth(viewWindow.end) && (
+                <span>{months[getMonth(viewWindow.end)]} </span>
+              )}
               {getDate(viewWindow.end) < 10
                 ? `0${getDate(viewWindow.end)}`
                 : getDate(viewWindow.end)}

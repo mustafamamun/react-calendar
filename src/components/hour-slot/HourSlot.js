@@ -19,7 +19,8 @@ const HourSlot = ({
   currentTime,
   onMouseOver,
   onMouseUp,
-  events
+  events,
+  onClickEvent
 }) => {
   const firstSlotStartHour = startOfHour(addHours(day, hour));
   const secondSlotStartHour = startOfMinute(addMinutes(firstSlotStartHour, 30));
@@ -45,6 +46,7 @@ const HourSlot = ({
         slotStart={firstSlotStartHour}
         selectedWindow={selectedWindow}
         currentTime={currentTime}
+        onClickEvent={onClickEvent}
         events={events}
       />
       <HalfAnHourSlot
@@ -59,6 +61,7 @@ const HourSlot = ({
         selectedWindow={selectedWindow}
         currentTime={currentTime}
         events={events}
+        onClickEvent={onClickEvent}
       />
     </>
   );

@@ -12,9 +12,49 @@ function Calendar({ events = [] }) {
   }, 5 * 60 * 1000);
   const mockevents = [
     {
-      start: new Date('2020-03-11T04:00:00+02:00'),
+      start: new Date('2020-03-21T04:00:00+02:00'),
       end: new Date('2020-03-21T04:30:00+02:00'),
-      title: 'sdfgsdfg1'
+      title: 'sdfgsdfg1asdfasfasdfsdfasdfasdfasdfasdf'
+    },
+    {
+      start: new Date('2020-03-21T04:00:00+02:00'),
+      end: new Date('2020-03-21T04:30:00+02:00'),
+      title: 'sdfgsdfg1asdfasdfsdfasdfsdfasdfasdfasdf'
+    },
+    {
+      start: new Date('2020-03-21T04:00:00+02:00'),
+      end: new Date('2020-03-21T04:30:00+02:00'),
+      title: 'sdfgsdfg1asdfasdasdfasdfadfasdfasdfasdf'
+    },
+    {
+      start: new Date('2020-03-21T04:00:00+02:00'),
+      end: new Date('2020-03-21T04:30:00+02:00'),
+      title: 'sdfgsdfg1asdasdasdfasdfasdfasdfasdfasdf'
+    },
+    {
+      start: new Date('2020-03-21T04:00:00+02:00'),
+      end: new Date('2020-03-21T04:30:00+02:00'),
+      title: 'sdfgsdfg1asdfasdfasfasdfasdfasdfadfasdf'
+    },
+    {
+      start: new Date('2020-03-21T04:00:00+02:00'),
+      end: new Date('2020-03-21T04:30:00+02:00'),
+      title: 'sdfgsdfg1asdfasdfasdfsdfasdfasdfasdasdf'
+    },
+    {
+      start: new Date('2020-03-21T04:00:00+02:00'),
+      end: new Date('2020-03-21T04:30:00+02:00'),
+      title: 'sdfgsdfg1asdfasdfasfasdfasdfasfasdfasdf'
+    },
+    {
+      start: new Date('2020-03-21T04:00:00+02:00'),
+      end: new Date('2020-03-21T04:30:00+02:00'),
+      title: 'sdfgsdfg1asdfasdfasdfadfasdfasdfadfasdf'
+    },
+    {
+      start: new Date('2020-03-21T04:00:00+02:00'),
+      end: new Date('2020-03-21T04:30:00+02:00'),
+      title: 'sdfgsdfg1asdfasdfasdfasfasdfasfasdfasdf'
     }
     // {
     //   start: new Date('2020-03-20T04:40:00+02:00'),

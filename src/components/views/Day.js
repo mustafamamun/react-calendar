@@ -19,8 +19,10 @@ const Day = ({ currentTime, events }) => {
     });
   };
   const onMouseUp = e => {
-    console.log(selectedWindow);
-    setSelectedWindow({});
+    if (!isEmpty(selectedWindow)) {
+      console.log(selectedWindow);
+      setSelectedWindow({});
+    }
   };
   const onMouseOver = e => {
     if (
@@ -45,6 +47,10 @@ const Day = ({ currentTime, events }) => {
     new Date(viewWindow.start),
     sortedEvents
   );
+
+  const onClickEvent = e => {
+    console.log(e);
+  };
 
   return (
     <Grid>
@@ -78,6 +84,7 @@ const Day = ({ currentTime, events }) => {
             onMouseOver={onMouseOver}
             onMouseUp={onMouseUp}
             events={eventsOfTheDay}
+            onClickEvent={onClickEvent}
           />
         </GridColumn>
       </GridRow>
