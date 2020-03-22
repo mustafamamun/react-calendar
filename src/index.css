@@ -201,11 +201,9 @@
   position: relative;
   background-color: #3174ad;
   color: white;
-  text-align: left;
   font-weight: bold;
   pointer-events: all;
   cursor: pointer;
-  max-width: 33% !important;
   height: 26px;
   margin-top: -1px;
   margin-bottom: -1px;
