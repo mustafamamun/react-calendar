@@ -4,7 +4,7 @@ import { Grid, GridRow, GridColumn } from 'semantic-ui-react';
 import TimeSlotsInDay from '../time-slots-in-day/TimeSlotsInDay';
 import { CalContext } from '../../context/Context';
 
-import { timeSlots, getEventsOfTheDay } from '../utils';
+import { timeSlots, getEventsOfTheDay, getEventIndex } from '../utils';
 import { addMinutes, isBefore, isSameDay } from 'date-fns';
 import { isEmpty, sortBy } from 'lodash';
 
@@ -48,9 +48,18 @@ const Day = ({ currentTime, events }) => {
     sortedEvents
   );
 
+  console.log(eventsOfTheDay);
+
   const onClickEvent = e => {
     console.log(e);
   };
+  const eventWithIndex = getEventIndex(eventsOfTheDay);
+  const highestIndex =
+    eventWithIndex.length > 0
+      ? eventWithIndex.reduce((prev, current) =>
+          prev.calprops.position > current.calprops.position ? prev : current
+        ).calprops.position + 1
+      : 1;
 
   return (
     <Grid>
@@ -83,8 +92,9 @@ const Day = ({ currentTime, events }) => {
             onMouseClick={onMouseClick}
             onMouseOver={onMouseOver}
             onMouseUp={onMouseUp}
-            events={eventsOfTheDay}
+            events={eventWithIndex}
             onClickEvent={onClickEvent}
+            highestIndex={highestIndex}
           />
         </GridColumn>
       </GridRow>

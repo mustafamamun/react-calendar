@@ -20,10 +20,12 @@ const HourSlot = ({
   onMouseOver,
   onMouseUp,
   events,
-  onClickEvent
+  onClickEvent,
+  highestIndex
 }) => {
   const firstSlotStartHour = startOfHour(addHours(day, hour));
   const secondSlotStartHour = startOfMinute(addMinutes(firstSlotStartHour, 30));
+
   const ifSlotSelected = slotStart => {
     return (
       !isEmpty(selectedWindow) &&
@@ -48,6 +50,7 @@ const HourSlot = ({
         currentTime={currentTime}
         onClickEvent={onClickEvent}
         events={events}
+        highestIndex={highestIndex}
       />
       <HalfAnHourSlot
         className={`last-half-an-hour ${
@@ -62,6 +65,7 @@ const HourSlot = ({
         currentTime={currentTime}
         events={events}
         onClickEvent={onClickEvent}
+        highestIndex={highestIndex}
       />
     </>
   );

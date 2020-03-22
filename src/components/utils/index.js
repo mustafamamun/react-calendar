@@ -5,7 +5,8 @@ import {
   addMinutes,
   isAfter,
   isBefore,
-  isSameMinute
+  isSameMinute,
+  isWithinInterval
 } from 'date-fns';
 
 export const daysInWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -76,6 +77,65 @@ export const getEventsOfTheDay = (day, events) => {
         isBefore(new Date(e.end), endOfDay(day)))
     );
   });
+};
+
+export const getEventIndex = events => {
+  if (events.length === 0) return events;
+  let tmpEvents = [...events];
+  let finalEvents = [];
+  while (tmpEvents.length > 0) {
+    const firstEvt = tmpEvents.splice(0, 1)[0];
+    firstEvt.calprops = {
+      position: 0
+    };
+    const overlappingEvent = tmpEvents.filter(e => {
+      return isWithinInterval(new Date(e.start), {
+        start: new Date(firstEvt.start),
+        end: new Date(firstEvt.end)
+      });
+    });
+    let indexedEvents = [];
+    overlappingEvent.map(e => {
+      if (indexedEvents.length > 0) {
+        const innerOverlappingEvent = indexedEvents.filter(indexedEvent => {
+          return isWithinInterval(new Date(e.start), {
+            start: new Date(indexedEvent.start),
+            end: new Date(indexedEvent.end)
+          });
+        });
+        if (innerOverlappingEvent.length === 0) {
+          indexedEvents.push({
+            ...e,
+            calprops: {
+              position: 1
+            }
+          });
+        } else {
+          const maxPos = innerOverlappingEvent.reduce((prev, current) =>
+            prev.calprops.position > current.calprops.position ? prev : current
+          ).calprops.position;
+
+          indexedEvents.push({
+            ...e,
+            calprops: {
+              position: maxPos + 1
+            }
+          });
+        }
+      } else {
+        indexedEvents.push({
+          ...e,
+          calprops: {
+            position: 1
+          }
+        });
+      }
+      return null;
+    });
+    finalEvents = [...finalEvents, firstEvt, ...indexedEvents];
+    tmpEvents.splice(0, overlappingEvent.length);
+  }
+  return finalEvents;
 };
 
 export const getEventOfTheSlot = (slotStart, events) => {

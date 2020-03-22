@@ -1,11 +1,17 @@
 import React, { useContext, useState } from 'react';
-import { eachDayOfInterval, addMinutes, isBefore, isSameDay } from 'date-fns';
-import { isEmpty } from 'lodash';
+import {
+  eachDayOfInterval,
+  addMinutes,
+  isBefore,
+  isSameDay,
+  startOfDay
+} from 'date-fns';
+import { isEmpty, sortBy } from 'lodash';
 
 import { CalContext } from '../../context/Context';
 import WeekRowWithDate from '../week-row/WeekRowWithDate';
 import { Grid, GridRow, GridColumn } from 'semantic-ui-react';
-import { timeSlots } from '../utils';
+import { timeSlots, getEventsOfTheDay, getEventIndex } from '../utils';
 import TimeSlotsInDay from '../time-slots-in-day/TimeSlotsInDay';
 
 const Week = ({ currentTime, events }) => {
@@ -63,6 +69,17 @@ const Week = ({ currentTime, events }) => {
           })}
         </GridColumn>
         {eachDayInWeek.map(day => {
+          const eventsOfTheDay = getEventsOfTheDay(startOfDay(day), events);
+          console.log(eventsOfTheDay);
+
+          const eventWithIndex = getEventIndex(sortBy(eventsOfTheDay, 'start'));
+          const highestIndex = isEmpty(eventWithIndex)
+            ? 1
+            : eventWithIndex.reduce((prev, current) =>
+                prev.calprops.position > current.calprops.position
+                  ? prev
+                  : current
+              ).calprops.position + 1;
           return (
             <GridColumn
               key={day.toISOString()}
@@ -77,8 +94,9 @@ const Week = ({ currentTime, events }) => {
                 onMouseClick={onMouseClick}
                 onMouseOver={onMouseOver}
                 onMouseUp={onMouseUp}
-                events={events}
+                events={eventWithIndex}
                 onClickEvent={onClickEvent}
+                highestIndex={highestIndex}
               />
             </GridColumn>
           );

@@ -8,6 +8,7 @@ import {
   isSameSecond,
   startOfDay
 } from 'date-fns';
+
 import { getEventOfTheSlot } from '../utils';
 
 const HalfAnHourSlot = ({
@@ -16,6 +17,7 @@ const HalfAnHourSlot = ({
   selectedWindow,
   events,
   onClickEvent,
+  highestIndex,
   ...rest
 }) => {
   const currentTiemBarStyle = {
@@ -67,8 +69,12 @@ const HalfAnHourSlot = ({
       {eventsOfTheSlot.map(e => {
         return (
           <div
-            key={e.title}
-            style={{ width: `${100 / eventsOfTheSlot.length}%` }}
+            key={`${e.start}${slotStart}${e.title}`}
+            style={{
+              width: `${100 / highestIndex}%`,
+              position: 'absolute',
+              left: `${(100 / highestIndex) * e.calprops.position}%`
+            }}
             className={`evnet-basic-slot ${
               isEventStartOnSlot(e, slotStart) ? 'event-start-slot' : ''
             } ${isEventEndOnSlot(e, slotStart) ? 'event-end-slot' : ''}`}
@@ -82,9 +88,9 @@ const HalfAnHourSlot = ({
               isSameMinute(startOfDay(slotStart), slotStart)) && (
               <div
                 style={{
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis'
+                  position: 'absolute',
+                  zIndex: '10000',
+                  wordBreak: 'break-all'
                 }}
               >
                 {e.title}
