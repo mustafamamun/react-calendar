@@ -70,8 +70,6 @@ const Week = ({ currentTime, events }) => {
         </GridColumn>
         {eachDayInWeek.map(day => {
           const eventsOfTheDay = getEventsOfTheDay(startOfDay(day), events);
-          console.log(eventsOfTheDay);
-
           const eventWithIndex = getEventIndex(sortBy(eventsOfTheDay, 'start'));
           const highestIndex = isEmpty(eventWithIndex)
             ? 1

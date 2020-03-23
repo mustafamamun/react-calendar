@@ -6,10 +6,12 @@ import {
   isWithinInterval,
   addMinutes,
   isSameSecond,
-  startOfDay
+  startOfDay,
+  differenceInMinutes
 } from 'date-fns';
+import Truncate from 'react-truncate';
 
-import { getEventOfTheSlot } from '../utils';
+import { getEventOfTheSlot, getEventTime } from '../utils';
 
 const HalfAnHourSlot = ({
   currentTime,
@@ -22,12 +24,15 @@ const HalfAnHourSlot = ({
 }) => {
   const currentTiemBarStyle = {
     position: 'absolute',
-    color: 'red',
-    backgroundColor: 'red',
+    color: '#ca3e47',
+    backgroundColor: '#ca3e47',
     height: '1px',
+    border: 0,
     margin: 0,
+    padding: 0,
     width: '100%',
-    top: `${Math.floor(((getMinutes(currentTime) % 30) / 30) * 24)}px`
+    top: `${Math.floor(((getMinutes(currentTime) % 30) / 30) * 24)}px`,
+    zIndex: 100000000000000
   };
   const eventsOfTheSlot = getEventOfTheSlot(slotStart, events);
   const isEventStartOnSlot = (e, slotStart) => {
@@ -73,7 +78,28 @@ const HalfAnHourSlot = ({
             style={{
               width: `${100 / highestIndex}%`,
               position: 'absolute',
-              left: `${(100 / highestIndex) * e.calprops.position}%`
+              left: `${(100 / highestIndex) * e.calprops.position}%`,
+              padding: 0,
+              height:
+                isEventEndOnSlot(e, slotStart) &&
+                differenceInMinutes(new Date(e.end), new Date(e.start)) / 30 > 1
+                  ? `${
+                      differenceInMinutes(
+                        addMinutes(slotStart, 30),
+                        new Date(e.end)
+                      ) > 0
+                        ? 26 -
+                          Math.round(
+                            (differenceInMinutes(
+                              addMinutes(slotStart, 30),
+                              new Date(e.end)
+                            ) *
+                              25) /
+                              30
+                          )
+                        : 26
+                    }px`
+                  : '26px'
             }}
             className={`evnet-basic-slot ${
               isEventStartOnSlot(e, slotStart) ? 'event-start-slot' : ''
@@ -90,10 +116,17 @@ const HalfAnHourSlot = ({
                 style={{
                   position: 'absolute',
                   zIndex: '10000',
-                  wordBreak: 'break-all'
+                  wordBreak: 'break-all',
+                  lineHeight: 'normal'
                 }}
               >
-                {e.title}
+                <Truncate
+                  lines={Math.ceil(
+                    differenceInMinutes(new Date(e.end), new Date(e.start)) / 30
+                  )}
+                >
+                  {getEventTime(e, slotStart)}, {e.title}
+                </Truncate>
               </div>
             )}
           </div>

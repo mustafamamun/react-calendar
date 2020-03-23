@@ -47,9 +47,6 @@ const Day = ({ currentTime, events }) => {
     new Date(viewWindow.start),
     sortedEvents
   );
-
-  console.log(eventsOfTheDay);
-
   const onClickEvent = e => {
     console.log(e);
   };

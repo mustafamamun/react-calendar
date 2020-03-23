@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   eachDayOfInterval,
   isBefore,
@@ -9,11 +9,12 @@ import {
   isWithinInterval,
   endOfDay,
   startOfMonth,
-  startOfWeek
+  startOfWeek,
+  endOfWeek
 } from 'date-fns';
 import { Grid, GridColumn, GridRow } from 'semantic-ui-react';
 import { getDate } from 'date-fns/esm';
-import { isEmpty, sortBy, slice, flow } from 'lodash';
+import { isEmpty, sortBy, slice, flow, get } from 'lodash';
 
 import WeekRow from '../week-row/WeekRow';
 import { CalContext } from '../../context/Context';
@@ -21,6 +22,7 @@ import { getEventsOfTheDay } from '../utils';
 
 const Month = ({ currentTime, events }) => {
   const { viewWindow, setViewWindow, setView } = useContext(CalContext);
+  const [dayWidth, setDayWidth] = useState(0);
   const eachDay = eachDayOfInterval({
     start: viewWindow.start,
     end: viewWindow.end
@@ -56,6 +58,26 @@ const Month = ({ currentTime, events }) => {
         end: endOfDay(new Date(selectedWindow.start)).toString()
       });
     }
+  };
+
+  useEffect(() => {
+    setDayWidth(
+      get(
+        document.getElementById(startOfDay(viewWindow.start)),
+        'offsetWidth',
+        0
+      )
+    );
+  });
+
+  window.onresize = () => {
+    setDayWidth(
+      get(
+        document.getElementById(startOfDay(viewWindow.start)),
+        'offsetWidth',
+        0
+      )
+    );
   };
 
   const ifSlotSelected = slotStart => {
@@ -139,9 +161,18 @@ const Month = ({ currentTime, events }) => {
                         isBefore(
                           new Date(e.start),
                           flow(startOfMonth, startOfWeek)(day)
-                        ))) && (
+                        )) ||
+                      (isSameDay(day, startOfWeek(day)) &&
+                        isBefore(new Date(e.start), startOfWeek(day)))) && (
                       <div
                         style={{
+                          position: 'absolute',
+                          width: `${dayWidth *
+                            (isBefore(endOfWeek(day), new Date(e.end))
+                              ? getDate(endOfWeek(day)) - getDate(day) + 1
+                              : getDate(e.end) - getDate(day) + 1) -
+                            10}px`,
+                          zIndex: '10000',
                           overflow: 'hidden',
                           whiteSpace: 'nowrap',
                           textOverflow: 'ellipsis'

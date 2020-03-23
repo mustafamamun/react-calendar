@@ -6,7 +6,10 @@ import {
   isAfter,
   isBefore,
   isSameMinute,
-  isWithinInterval
+  isWithinInterval,
+  getHours,
+  getMinutes,
+  endOfMinute
 } from 'date-fns';
 
 export const daysInWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -139,8 +142,7 @@ export const getEventIndex = events => {
 };
 
 export const getEventOfTheSlot = (slotStart, events) => {
-  const slotEnd = addMinutes(slotStart, 30);
-
+  const slotEnd = endOfMinute(addMinutes(slotStart, 29));
   return events.filter(e => {
     return (
       isSameSecond(slotStart, new Date(e.start)) ||
@@ -152,8 +154,31 @@ export const getEventOfTheSlot = (slotStart, events) => {
         isSameMinute(new Date(e.start), slotStart)) &&
         isBefore(new Date(e.start), slotEnd)) ||
       (isAfter(new Date(e.end), slotStart) &&
-        (isBefore(new Date(e.end), slotEnd),
-        isSameMinute(slotEnd, new Date(e.end))))
+        (isBefore(new Date(e.end), slotEnd) ||
+          isSameMinute(slotEnd, new Date(e.end))))
     );
   });
+};
+
+export const addLeadingZero = value => {
+  return value > 10 ? value : `0${value}`;
+};
+
+export const getEventTime = (e, slotStart) => {
+  const start = isBefore(new Date(e.start), startOfDay(slotStart))
+    ? `${addLeadingZero(getHours(startOfDay(slotStart)))} : ${addLeadingZero(
+        getMinutes(startOfDay(slotStart))
+      )}`
+    : `${addLeadingZero(getHours(new Date(e.start)))} : ${addLeadingZero(
+        getMinutes(new Date(e.start))
+      )}`;
+
+  const end = isAfter(new Date(e.end), endOfDay(slotStart))
+    ? `${addLeadingZero(getHours(endOfDay(slotStart)))} : ${addLeadingZero(
+        getMinutes(endOfDay(slotStart))
+      )}`
+    : `${addLeadingZero(getHours(new Date(e.end)))} : ${addLeadingZero(
+        getMinutes(new Date(e.end))
+      )}`;
+  return `${start} - ${end}`;
 };
