@@ -80,6 +80,19 @@ const HalfAnHourSlot = ({
               position: 'absolute',
               left: `${(100 / highestIndex) * e.calprops.position}%`,
               padding: 0,
+              marginTop:
+                isEventStartOnSlot(e, slotStart) &&
+                differenceInMinutes(new Date(e.end), new Date(e.start)) / 30 > 1
+                  ? `${
+                      differenceInMinutes(new Date(e.start), slotStart) > 0
+                        ? Math.round(
+                            (differenceInMinutes(new Date(e.start), slotStart) *
+                              25) /
+                              30
+                          )
+                        : -1
+                    }px`
+                  : '-1px',
               height:
                 isEventEndOnSlot(e, slotStart) &&
                 differenceInMinutes(new Date(e.end), new Date(e.start)) / 30 > 1

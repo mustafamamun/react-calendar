@@ -161,7 +161,7 @@ export const getEventOfTheSlot = (slotStart, events) => {
 };
 
 export const addLeadingZero = value => {
-  return value > 10 ? value : `0${value}`;
+  return value >= 10 ? value : `0${value}`;
 };
 
 export const getEventTime = (e, slotStart) => {
