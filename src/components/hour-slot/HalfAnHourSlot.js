@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   getMinutes,
   isSameMinute,
@@ -12,6 +12,7 @@ import {
 import Truncate from 'react-truncate';
 
 import { getEventOfTheSlot, getEventTime } from '../utils';
+import { CalContext } from '../../context/Context';
 
 const HalfAnHourSlot = ({
   currentTime,
@@ -22,6 +23,7 @@ const HalfAnHourSlot = ({
   highestIndex,
   ...rest
 }) => {
+  const { view } = useContext(CalContext);
   const currentTiemBarStyle = {
     position: 'absolute',
     color: '#ca3e47',
@@ -77,12 +79,13 @@ const HalfAnHourSlot = ({
             key={`${e.start}${slotStart}${e.title}`}
             style={{
               width: `${100 / highestIndex}%`,
+              maxWidth: `${view === 'day' ? '50%' : '100%'}`,
               position: 'absolute',
               left: `${(100 / highestIndex) * e.calprops.position}%`,
               padding: 0,
               marginTop:
                 isEventStartOnSlot(e, slotStart) &&
-                differenceInMinutes(new Date(e.end), new Date(e.start)) / 30 > 1
+                differenceInMinutes(new Date(e.end), new Date(e.start)) / 20 > 1
                   ? `${
                       differenceInMinutes(new Date(e.start), slotStart) > 0
                         ? Math.round(
@@ -95,7 +98,7 @@ const HalfAnHourSlot = ({
                   : '-1px',
               height:
                 isEventEndOnSlot(e, slotStart) &&
-                differenceInMinutes(new Date(e.end), new Date(e.start)) / 30 > 1
+                differenceInMinutes(new Date(e.end), new Date(e.start)) / 20 > 1
                   ? `${
                       differenceInMinutes(
                         addMinutes(slotStart, 30),
