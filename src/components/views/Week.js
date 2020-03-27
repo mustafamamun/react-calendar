@@ -58,7 +58,7 @@ const Week = ({ currentTime, events }) => {
   return (
     <Grid columns={8}>
       <WeekRowWithDate allDates={eachDayInWeek} />
-      <GridRow className={'wk-container pt-0 pb-0'}>
+      <GridRow className={'scroll-box pt-0 pb-0'}>
         <GridColumn className={'pr-0 pl-0'}>
           {timeSlots.map(time => {
             return (

@@ -12,14 +12,13 @@ function Calendar({ events = [] }) {
   }, 5 * 60 * 1000);
   const mockevents = [
     {
-      start: new Date('2020-03-27T10:50:00+02:00'),
+      start: new Date('2020-02-24T10:50:00+02:00'),
       end: new Date('2020-03-27T11:10:00+02:00'),
-      title:
-        'This is a event on mac sdsdfg asdfas asdfsa asfa asdfa asdfasdf as fasdfa sd sdfgs sdfgs sfdgsd s '
+      title: 'This is a event on mac sdsdfg asdfas asdfsa asfa asdfa asdfasdf'
     }
   ];
   return (
-    <Context defaultView={'day'}>
+    <Context defaultView={'agenda:day'}>
       <Container className="mt-5">
         <Nav />
         <Views currentTime={currentTime} events={mockevents} />

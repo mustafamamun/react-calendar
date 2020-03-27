@@ -19,11 +19,12 @@ import {
   getMonth,
   getYear,
   getDate,
-  getDay
+  getDay,
+  format
 } from 'date-fns';
 import { months, daysFullInWeek } from '../utils';
 
-const Nav = () => {
+const Nav = ({ onNavigation, onViewChange }) => {
   const { viewWindow, view, setViewWindow, setView } = useContext(CalContext);
   const addOneWeek = date => addWeeks(date, 1);
   const addOneMonth = date => addMonths(date, 1);
@@ -56,24 +57,29 @@ const Nav = () => {
     });
   };
   const setAgendaView = () => {
-    //TO DO: Might need to set as month view
-    setView('agenda');
+    setView(`agenda:${view}`);
   };
 
   const setToday = () => {
-    if (view === 'month' || view === 'agenda') {
+    if (
+      view === 'month' ||
+      (view.split(':')[0] === 'agenda' && view === 'month')
+    ) {
       setViewWindow({
         start: flow(startOfMonth, startOfWeek)(new Date()),
         end: flow(endOfMonth, endOfWeek)(new Date())
       });
     }
-    if (view === 'week') {
+    if (
+      view === 'week' ||
+      (view.split(':')[0] === 'agenda' && view === 'week')
+    ) {
       setViewWindow({
         start: startOfWeek(new Date()),
         end: endOfWeek(new Date())
       });
     }
-    if (view === 'day') {
+    if (view === 'day' || (view.split(':')[0] === 'agenda' && view === 'day')) {
       setViewWindow({
         start: startOfDay(new Date()),
         end: endOfDay(new Date())
@@ -82,7 +88,10 @@ const Nav = () => {
   };
 
   const onBack = () => {
-    if (view === 'month' || view === 'agenda') {
+    if (
+      view === 'month' ||
+      (view.split(':')[0] === 'agenda' && view.split(':')[1] === 'month')
+    ) {
       setViewWindow({
         start: flow(
           addOneWeek,
@@ -98,13 +107,19 @@ const Nav = () => {
         )(viewWindow.start)
       });
     }
-    if (view === 'week') {
+    if (
+      view === 'week' ||
+      (view.split(':')[0] === 'agenda' && view.split(':')[1] === 'week')
+    ) {
       setViewWindow({
         start: flow(subOneWeek, startOfWeek)(viewWindow.start),
         end: flow(subOneWeek, endOfWeek)(viewWindow.start)
       });
     }
-    if (view === 'day') {
+    if (
+      view === 'day' ||
+      (view.split(':')[0] === 'agenda' && view.split(':')[1] === 'day')
+    ) {
       setViewWindow({
         start: flow(subOneDay, startOfDay)(viewWindow.start),
         end: flow(subOneDay, endOfDay)(viewWindow.start)
@@ -113,7 +128,10 @@ const Nav = () => {
   };
 
   const onNext = () => {
-    if (view === 'month' || view === 'agenda') {
+    if (
+      view === 'month' ||
+      (view.split(':')[0] === 'agenda' && view.split(':')[1] === 'month')
+    ) {
       setViewWindow({
         start: flow(
           addOneWeek,
@@ -129,13 +147,19 @@ const Nav = () => {
         )(viewWindow.start)
       });
     }
-    if (view === 'week') {
+    if (
+      view === 'week' ||
+      (view.split(':')[0] === 'agenda' && view.split(':')[1] === 'week')
+    ) {
       setViewWindow({
         start: flow(addOneWeek, startOfWeek)(viewWindow.start),
         end: flow(addOneWeek, endOfWeek)(viewWindow.start)
       });
     }
-    if (view === 'day') {
+    if (
+      view === 'day' ||
+      (view.split(':')[0] === 'agenda' && view.split(':')[1] === 'day')
+    ) {
       setViewWindow({
         start: flow(addOneDay, startOfDay)(viewWindow.start),
         end: flow(addOneDay, endOfDay)(viewWindow.start)
@@ -181,7 +205,15 @@ const Nav = () => {
               {getYear(addOneWeek(viewWindow.start))}
             </b>
           )}
-          {view === 'week' && (
+          {view.split(':')[0] === 'agenda' && view.split(':')[1] === 'month' && (
+            <span>
+              {format(viewWindow.start, 'dd/MM/yyyy')} -{' '}
+              {format(viewWindow.end, 'dd/MM/yyyy')}
+            </span>
+          )}
+          {(view === 'week' ||
+            (view.split(':')[0] === 'agenda' &&
+              view.split(':')[1] === 'week')) && (
             <b>
               {months[getMonth(viewWindow.start)]}{' '}
               {getDate(viewWindow.start) < 10
@@ -196,7 +228,9 @@ const Nav = () => {
                 : getDate(viewWindow.end)}
             </b>
           )}
-          {view === 'day' && (
+          {(view === 'day' ||
+            (view.split(':')[0] === 'agenda' &&
+              view.split(':')[1] === 'day')) && (
             <b>
               {daysFullInWeek[getDay(viewWindow.start)]}{' '}
               {months[getMonth(viewWindow.start)]}{' '}

@@ -15,7 +15,7 @@ const IndexView = ({ ...props }) => {
   if (view === 'day') {
     return <Day {...props} />;
   }
-  if (view === 'agenda') {
+  if (view.split(':')[0] === 'agenda') {
     return <Agenda {...props} />;
   }
 };

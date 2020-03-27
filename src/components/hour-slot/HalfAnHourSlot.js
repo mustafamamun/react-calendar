@@ -118,6 +118,7 @@ const HalfAnHourSlot = ({
             {(isEventStartOnSlot(e, slotStart) ||
               isSameMinute(startOfDay(slotStart), slotStart)) && (
               <div
+                id={'title-box'}
                 style={{
                   position: 'absolute',
                   zIndex: '10000',

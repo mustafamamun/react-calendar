@@ -182,5 +182,5 @@ export const getEventTime = (e, slotStart) => {
 
 export const getHight = (start, end) => {
   const diff = differenceInMinutes(end, start);
-  return diff > 20 ? (diff * 24) / 30 : 50;
+  return diff > 20 ? (diff < 1440 ? (diff * 24) / 30 : (1440 * 24) / 30) : 50;
 };
