@@ -9,7 +9,8 @@ import {
   isWithinInterval,
   getHours,
   getMinutes,
-  endOfMinute
+  endOfMinute,
+  differenceInMinutes
 } from 'date-fns';
 
 export const daysInWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -69,15 +70,13 @@ export const timeSlots = [
 export const getEventsOfTheDay = (day, events) => {
   return events.filter(e => {
     return (
-      isSameSecond(day, new Date(e.start)) ||
-      (isAfter(startOfDay(day), new Date(e.start)) &&
-        isBefore(startOfDay(day), new Date(e.end)) &&
-        isAfter(endOfDay(day), new Date(e.start)) &&
-        isBefore(endOfDay(day), new Date(e.end))) ||
-      (isAfter(new Date(e.start), startOfDay(day)) &&
-        isBefore(new Date(e.start), endOfDay(day))) ||
-      (isAfter(new Date(e.end), startOfDay(day)) &&
-        isBefore(new Date(e.end), endOfDay(day)))
+      isSameSecond(day, e.start) ||
+      (isAfter(startOfDay(day), e.start) &&
+        isBefore(startOfDay(day), e.end) &&
+        isAfter(endOfDay(day), e.start) &&
+        isBefore(endOfDay(day), e.end)) ||
+      (isAfter(e.start, startOfDay(day)) && isBefore(e.start, endOfDay(day))) ||
+      (isAfter(e.end, startOfDay(day)) && isBefore(e.end, endOfDay(day)))
     );
   });
 };
@@ -92,18 +91,18 @@ export const getEventIndex = events => {
       position: 0
     };
     const overlappingEvent = tmpEvents.filter(e => {
-      return isWithinInterval(new Date(e.start), {
-        start: new Date(firstEvt.start),
-        end: new Date(firstEvt.end)
+      return isWithinInterval(e.start, {
+        start: firstEvt.start,
+        end: firstEvt.end
       });
     });
     let indexedEvents = [];
     overlappingEvent.map(e => {
       if (indexedEvents.length > 0) {
         const innerOverlappingEvent = indexedEvents.filter(indexedEvent => {
-          return isWithinInterval(new Date(e.start), {
-            start: new Date(indexedEvent.start),
-            end: new Date(indexedEvent.end)
+          return isWithinInterval(e.start, {
+            start: indexedEvent.start,
+            end: indexedEvent.end
           });
         });
         if (innerOverlappingEvent.length === 0) {
@@ -145,17 +144,15 @@ export const getEventOfTheSlot = (slotStart, events) => {
   const slotEnd = endOfMinute(addMinutes(slotStart, 29));
   return events.filter(e => {
     return (
-      isSameSecond(slotStart, new Date(e.start)) ||
-      (isAfter(slotStart, new Date(e.start)) &&
-        isBefore(slotStart, new Date(e.end)) &&
-        isAfter(slotEnd, new Date(e.start)) &&
-        isBefore(slotEnd, new Date(e.end))) ||
-      ((isAfter(new Date(e.start), slotStart) ||
-        isSameMinute(new Date(e.start), slotStart)) &&
-        isBefore(new Date(e.start), slotEnd)) ||
-      (isAfter(new Date(e.end), slotStart) &&
-        (isBefore(new Date(e.end), slotEnd) ||
-          isSameMinute(slotEnd, new Date(e.end))))
+      isSameSecond(slotStart, e.start) ||
+      (isAfter(slotStart, e.start) &&
+        isBefore(slotStart, e.end) &&
+        isAfter(slotEnd, e.start) &&
+        isBefore(slotEnd, e.end)) ||
+      ((isAfter(e.start, slotStart) || isSameMinute(e.start, slotStart)) &&
+        isBefore(e.start, slotEnd)) ||
+      (isAfter(e.end, slotStart) &&
+        (isBefore(e.end, slotEnd) || isSameMinute(slotEnd, e.end)))
     );
   });
 };
@@ -165,20 +162,25 @@ export const addLeadingZero = value => {
 };
 
 export const getEventTime = (e, slotStart) => {
-  const start = isBefore(new Date(e.start), startOfDay(slotStart))
+  const start = isBefore(e.start, startOfDay(slotStart))
     ? `${addLeadingZero(getHours(startOfDay(slotStart)))} : ${addLeadingZero(
         getMinutes(startOfDay(slotStart))
       )}`
-    : `${addLeadingZero(getHours(new Date(e.start)))} : ${addLeadingZero(
-        getMinutes(new Date(e.start))
+    : `${addLeadingZero(getHours(e.start))} : ${addLeadingZero(
+        getMinutes(e.start)
       )}`;
 
-  const end = isAfter(new Date(e.end), endOfDay(slotStart))
+  const end = isAfter(e.end, endOfDay(slotStart))
     ? `${addLeadingZero(getHours(endOfDay(slotStart)))} : ${addLeadingZero(
         getMinutes(endOfDay(slotStart))
       )}`
-    : `${addLeadingZero(getHours(new Date(e.end)))} : ${addLeadingZero(
-        getMinutes(new Date(e.end))
+    : `${addLeadingZero(getHours(e.end))} : ${addLeadingZero(
+        getMinutes(e.end)
       )}`;
   return `${start} - ${end}`;
+};
+
+export const getHight = (start, end) => {
+  const diff = differenceInMinutes(end, start);
+  return diff > 20 ? (diff * 24) / 30 : 50;
 };

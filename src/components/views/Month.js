@@ -31,8 +31,8 @@ const Month = ({ currentTime, events }) => {
   const onMouseClick = e => {
     e.preventDefault();
     setSelectedWindow({
-      start: e.target.id,
-      end: endOfDay(new Date(e.target.id)).toString()
+      start: new Date(e.target.id),
+      end: endOfDay(new Date(e.target.id))
     });
   };
   const onMouseUp = e => {
@@ -45,17 +45,17 @@ const Month = ({ currentTime, events }) => {
     if (
       !isEmpty(selectedWindow) &&
       e.target.id &&
-      !isBefore(new Date(e.target.id), new Date(selectedWindow.start))
+      !isBefore(new Date(e.target.id), selectedWindow.start)
     ) {
       setSelectedWindow({
         ...selectedWindow,
-        end: endOfDay(new Date(e.target.id)).toString()
+        end: endOfDay(new Date(e.target.id))
       });
     }
-    if (isBefore(new Date(e.target.id), new Date(selectedWindow.start))) {
+    if (isBefore(new Date(e.target.id), selectedWindow.start)) {
       setSelectedWindow({
         ...selectedWindow,
-        end: endOfDay(new Date(selectedWindow.start)).toString()
+        end: endOfDay(selectedWindow.start)
       });
     }
   };
@@ -83,16 +83,16 @@ const Month = ({ currentTime, events }) => {
   const ifSlotSelected = slotStart => {
     return (
       !isEmpty(selectedWindow) &&
-      (isSameMinute(slotStart, new Date(selectedWindow.start)) ||
-        (isAfter(slotStart, new Date(selectedWindow.start)) &&
-          isBefore(slotStart, new Date(selectedWindow.end))))
+      (isSameMinute(slotStart, selectedWindow.start) ||
+        (isAfter(slotStart, selectedWindow.start) &&
+          isBefore(slotStart, selectedWindow.end)))
     );
   };
   const sortedEvents = sortBy(events, 'start');
   const isEventStartOnDay = (e, day) => {
     return (
-      isSameMinute(startOfDay(day), new Date(e.start)) ||
-      isWithinInterval(new Date(e.start), {
+      isSameMinute(startOfDay(day), e.start) ||
+      isWithinInterval(e.start, {
         start: startOfDay(day),
         end: endOfDay(day)
       })
@@ -100,8 +100,8 @@ const Month = ({ currentTime, events }) => {
   };
   const isEventEndOnDay = (e, day) => {
     return (
-      isSameMinute(endOfDay(day), new Date(e.end)) ||
-      isWithinInterval(new Date(e.end), {
+      isSameMinute(endOfDay(day), e.end) ||
+      isWithinInterval(e.end, {
         start: startOfDay(day),
         end: endOfDay(day)
       })
@@ -159,16 +159,16 @@ const Month = ({ currentTime, events }) => {
                     {(isEventStartOnDay(e, day) ||
                       (isSameDay(day, flow(startOfMonth, startOfWeek)(day)) &&
                         isBefore(
-                          new Date(e.start),
+                          e.start,
                           flow(startOfMonth, startOfWeek)(day)
                         )) ||
                       (isSameDay(day, startOfWeek(day)) &&
-                        isBefore(new Date(e.start), startOfWeek(day)))) && (
+                        isBefore(e.start, startOfWeek(day)))) && (
                       <div
                         style={{
                           position: 'absolute',
                           width: `${dayWidth *
-                            (isBefore(endOfWeek(day), new Date(e.end))
+                            (isBefore(endOfWeek(day), e.end)
                               ? getDate(endOfWeek(day)) - getDate(day) + 1
                               : getDate(e.end) - getDate(day) + 1) -
                             10}px`,

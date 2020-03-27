@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import {
   getMinutes,
   isSameMinute,
@@ -9,10 +9,8 @@ import {
   startOfDay,
   differenceInMinutes
 } from 'date-fns';
-import Truncate from 'react-truncate';
 
-import { getEventOfTheSlot, getEventTime } from '../utils';
-import { CalContext } from '../../context/Context';
+import { getEventOfTheSlot, getEventTime, getHight } from '../utils';
 
 const HalfAnHourSlot = ({
   currentTime,
@@ -23,7 +21,6 @@ const HalfAnHourSlot = ({
   highestIndex,
   ...rest
 }) => {
-  const { view } = useContext(CalContext);
   const currentTiemBarStyle = {
     position: 'absolute',
     color: '#ca3e47',
@@ -39,17 +36,17 @@ const HalfAnHourSlot = ({
   const eventsOfTheSlot = getEventOfTheSlot(slotStart, events);
   const isEventStartOnSlot = (e, slotStart) => {
     return (
-      isSameSecond(new Date(slotStart), new Date(e.start)) ||
-      isWithinInterval(new Date(e.start), {
+      isSameSecond(slotStart, e.start) ||
+      isWithinInterval(e.start, {
         start: slotStart,
         end: addMinutes(slotStart, 30)
       })
     );
   };
-  const isEventEndOnSlot = (e, day) => {
+  const isEventEndOnSlot = (e, slotStart) => {
     return (
-      isSameSecond(addMinutes(slotStart, 30), new Date(e.end)) ||
-      isWithinInterval(new Date(e.end), {
+      isSameSecond(addMinutes(slotStart, 30), e.end) ||
+      isWithinInterval(e.end, {
         start: slotStart,
         end: addMinutes(slotStart, 30)
       })
@@ -57,12 +54,10 @@ const HalfAnHourSlot = ({
   };
   return (
     <div {...rest}>
-      {isSameMinute(slotStart, new Date(selectedWindow.start)) && (
+      {isSameMinute(slotStart, selectedWindow.start) && (
         <div className={'show-selection'}>
-          <div>
-            {format(new Date(selectedWindow.start), 'dd-MM-yy, HH:mm')} -
-          </div>
-          <div>{format(new Date(selectedWindow.end), 'dd-MM-yy, HH:mm')}</div>
+          <div>{format(selectedWindow.start, 'dd-MM-yy, HH:mm')} -</div>
+          <div>{format(selectedWindow.end, 'dd-MM-yy, HH:mm')}</div>
         </div>
       )}
       {isWithinInterval(currentTime, {
@@ -79,36 +74,30 @@ const HalfAnHourSlot = ({
             key={`${e.start}${slotStart}${e.title}`}
             style={{
               width: `${100 / highestIndex}%`,
-              maxWidth: `${view === 'day' ? '50%' : '100%'}`,
               position: 'absolute',
               left: `${(100 / highestIndex) * e.calprops.position}%`,
               padding: 0,
               marginTop:
                 isEventStartOnSlot(e, slotStart) &&
-                differenceInMinutes(new Date(e.end), new Date(e.start)) / 20 > 1
+                differenceInMinutes(e.end, e.start) / 20 > 1
                   ? `${
-                      differenceInMinutes(new Date(e.start), slotStart) > 0
+                      differenceInMinutes(e.start, slotStart) > 0
                         ? Math.round(
-                            (differenceInMinutes(new Date(e.start), slotStart) *
-                              25) /
-                              30
+                            (differenceInMinutes(e.start, slotStart) * 25) / 30
                           )
                         : -1
                     }px`
                   : '-1px',
               height:
                 isEventEndOnSlot(e, slotStart) &&
-                differenceInMinutes(new Date(e.end), new Date(e.start)) / 20 > 1
+                differenceInMinutes(e.end, e.start) / 20 > 1
                   ? `${
-                      differenceInMinutes(
-                        addMinutes(slotStart, 30),
-                        new Date(e.end)
-                      ) > 0
+                      differenceInMinutes(addMinutes(slotStart, 30), e.end) > 0
                         ? 26 -
                           Math.round(
                             (differenceInMinutes(
                               addMinutes(slotStart, 30),
-                              new Date(e.end)
+                              e.end
                             ) *
                               25) /
                               30
@@ -133,16 +122,14 @@ const HalfAnHourSlot = ({
                   position: 'absolute',
                   zIndex: '10000',
                   wordBreak: 'break-all',
-                  lineHeight: 'normal'
+                  lineHeight: 'normal',
+                  height: `${getHight(e.start, e.end)}px`,
+                  overflow: 'hidden'
                 }}
               >
-                <Truncate
-                  lines={Math.ceil(
-                    differenceInMinutes(new Date(e.end), new Date(e.start)) / 30
-                  )}
-                >
-                  {getEventTime(e, slotStart)}, {e.title}
-                </Truncate>
+                {getEventTime(e, slotStart)}
+                <br />
+                {e.title}
               </div>
             )}
           </div>

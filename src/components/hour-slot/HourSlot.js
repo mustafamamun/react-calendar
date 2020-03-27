@@ -29,9 +29,9 @@ const HourSlot = ({
   const ifSlotSelected = slotStart => {
     return (
       !isEmpty(selectedWindow) &&
-      (isSameMinute(slotStart, new Date(selectedWindow.start)) ||
-        (isAfter(slotStart, new Date(selectedWindow.start)) &&
-          isBefore(slotStart, new Date(selectedWindow.end))))
+      (isSameMinute(slotStart, selectedWindow.start) ||
+        (isAfter(slotStart, selectedWindow.start) &&
+          isBefore(slotStart, selectedWindow.end)))
     );
   };
 

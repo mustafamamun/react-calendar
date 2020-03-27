@@ -14,8 +14,8 @@ const Day = ({ currentTime, events }) => {
   const onMouseClick = e => {
     e.preventDefault();
     setSelectedWindow({
-      start: e.target.id,
-      end: addMinutes(new Date(e.target.id), '30').toString()
+      start: new Date(e.target.id),
+      end: addMinutes(new Date(e.target.id), '30')
     });
   };
   const onMouseUp = e => {
@@ -28,25 +28,22 @@ const Day = ({ currentTime, events }) => {
     if (
       !isEmpty(selectedWindow) &&
       e.target.id &&
-      !isBefore(new Date(e.target.id), new Date(selectedWindow.start))
+      !isBefore(new Date(e.target.id), selectedWindow.start)
     ) {
       setSelectedWindow({
         ...selectedWindow,
-        end: addMinutes(new Date(e.target.id), 30).toString()
+        end: addMinutes(new Date(e.target.id), 30)
       });
     }
-    if (isBefore(new Date(e.target.id), new Date(selectedWindow.start))) {
+    if (isBefore(new Date(e.target.id), selectedWindow.start)) {
       setSelectedWindow({
         ...selectedWindow,
-        end: addMinutes(new Date(selectedWindow.start), 30).toString()
+        end: addMinutes(selectedWindow.start, 30)
       });
     }
   };
   const sortedEvents = sortBy(events, 'start');
-  const eventsOfTheDay = getEventsOfTheDay(
-    new Date(viewWindow.start),
-    sortedEvents
-  );
+  const eventsOfTheDay = getEventsOfTheDay(viewWindow.start, sortedEvents);
   const onClickEvent = e => {
     console.log(e);
   };
@@ -79,11 +76,11 @@ const Day = ({ currentTime, events }) => {
         <GridColumn
           width={13}
           className={`pr-0 pl-0 ${
-            isSameDay(new Date(viewWindow.start), new Date()) ? 'same-day' : ''
+            isSameDay(viewWindow.start, new Date()) ? 'same-day' : ''
           }`}
         >
           <TimeSlotsInDay
-            day={new Date(viewWindow.start)}
+            day={viewWindow.start}
             currentTime={currentTime}
             selectedWindow={selectedWindow}
             onMouseClick={onMouseClick}
