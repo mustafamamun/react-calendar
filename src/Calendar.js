@@ -19,6 +19,11 @@ function Calendar({
       start: new Date('2020-03-29T22:50:00+03:00'),
       end: new Date('2020-03-29T23:10:00+03:00'),
       title: 'This is a event on mac sdsdfg asdfas asdfsa asfa asdfa asdfasdf'
+    },
+    {
+      start: new Date('2020-03-29T22:50:00+03:00'),
+      end: new Date('2020-03-29T23:10:00+03:00'),
+      title: 'This is a event on mac sdsdfg asdfas asdfsa asfa asdfa asdfasdf'
     }
   ]
 }) {

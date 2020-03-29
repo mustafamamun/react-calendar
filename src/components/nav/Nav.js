@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { Grid, GridRow, GridColumn, Button } from 'semantic-ui-react'
+import { Grid, GridRow, GridColumn } from 'semantic-ui-react'
 import { flow } from 'lodash'
 
 import { CalContext } from '../../context/Context'
@@ -196,33 +196,29 @@ const Nav = ({ onNavigation, onViewChange }) => {
       <GridRow>
         <GridColumn
           width={1}
-          as={Button}
-          className='pr-0 pl-0 m-0'
+          // as={Button}
+          className='p-1'
           onClick={setToday}
         >
-          Today
+          <button className='ui mini button nav-btn'>Today</button>
         </GridColumn>
         <GridColumn
           width={1}
-          as={Button}
-          className='pr-0 pl-0 m-0'
+          // as={Button}
+          className='p-1'
           onClick={onBack}
         >
-          Back
+          <button className='ui mini button nav-btn'>Back</button>
         </GridColumn>
         <GridColumn
           width={1}
-          as={Button}
-          className='pr-0 pl-0 m-0'
+          // as={Button}
+          className='p-1'
           onClick={onNext}
         >
-          Next
+          <button className='ui mini button nav-btn'>Next</button>
         </GridColumn>
-        <GridColumn
-          width={9}
-          as={'div'}
-          className={'nav-text-center pr-0 pl-0 m-0'}
-        >
+        <GridColumn width={9} as={'div'} className={'nav-text-center p-1'}>
           {view === 'month' && (
             <b>
               {months[getMonth(addOneWeek(viewWindow.start))]}{' '}
@@ -266,35 +262,35 @@ const Nav = ({ onNavigation, onViewChange }) => {
         </GridColumn>
         <GridColumn
           width={1}
-          as={Button}
-          className='pr-0 pl-0 m-0'
+          // as={Button}
+          className='p-1'
           onClick={setMonthView}
         >
-          Month
+          <button className='ui mini button nav-btn'>Month</button>
         </GridColumn>
         <GridColumn
           width={1}
-          as={Button}
-          className='pr-0 pl-0 m-0'
+          // as={Button}
+          className='p-1'
           onClick={setWeekView}
         >
-          Week
+          <button className='ui mini button nav-btn'>Week</button>
         </GridColumn>
         <GridColumn
           width={1}
-          as={Button}
-          className='pr-0 pl-0 m-0'
+          // as={Button}
+          className='p-1'
           onClick={setDayView}
         >
-          Day
+          <button className='ui mini button nav-btn'>Day</button>
         </GridColumn>
         <GridColumn
           width={1}
-          as={Button}
-          className='pr-0 pl-0 m-0'
+          // as={Button}
+          className='p-1'
           onClick={setAgendaView}
         >
-          Agenda
+          <button className='ui mini button nav-btn'>Agenda</button>
         </GridColumn>
       </GridRow>
     </Grid>

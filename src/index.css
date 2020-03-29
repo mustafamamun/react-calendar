@@ -23,7 +23,14 @@
 .pt-0 {
   padding-top: 0 !important;
 }
-
+.p-1 {
+  padding: 1px !important;
+}
+.nav-btn {
+  width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
 .nav-text-center {
   padding: 10px;
   font-size: large;

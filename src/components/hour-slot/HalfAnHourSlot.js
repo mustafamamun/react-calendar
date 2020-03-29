@@ -35,9 +35,9 @@ const HalfAnHourSlot = ({
   }
   const eventStyle = e => {
     return {
-      width: `${100 / highestIndex}%`,
+      width: `${(100 - 5) / highestIndex}%`,
       position: 'absolute',
-      left: `${(100 / highestIndex) * e.calprops.position}%`,
+      left: `${((100 - 5) / highestIndex) * e.calprops.position}%`,
       padding: 0,
       marginTop: `${getMarginTop(e, slotStart)}px`,
       height: `${getHeight(e, slotStart)}px`
