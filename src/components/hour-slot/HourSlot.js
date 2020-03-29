@@ -1,15 +1,15 @@
-import React from 'react';
-import { isEmpty } from 'lodash';
+import React from 'react'
+import { isEmpty } from 'lodash'
 import {
   addHours,
-  startOfHour,
   startOfMinute,
   addMinutes,
   isAfter,
   isSameMinute,
-  isBefore
-} from 'date-fns';
-import HalfAnHourSlot from './HalfAnHourSlot';
+  isBefore,
+  subHours
+} from 'date-fns'
+import HalfAnHourSlot from './HalfAnHourSlot'
 
 const HourSlot = ({
   day,
@@ -23,8 +23,20 @@ const HourSlot = ({
   onClickEvent,
   highestIndex
 }) => {
-  const firstSlotStartHour = startOfHour(addHours(day, hour));
-  const secondSlotStartHour = startOfMinute(addMinutes(firstSlotStartHour, 30));
+  const startTZO = day.getTimezoneOffset()
+  const endDate = addHours(day, hour)
+  const endTZO = endDate.getTimezoneOffset()
+  const zoneOffsetBefore = subHours(endDate, 1).getTimezoneOffset()
+
+  let firstSlotStartHour
+  if (startTZO > endTZO && zoneOffsetBefore === endTZO) {
+    firstSlotStartHour = startOfMinute(addHours(day, hour - 1))
+  } else if (startTZO < endTZO) {
+    firstSlotStartHour = startOfMinute(addHours(day, hour + 1))
+  } else {
+    firstSlotStartHour = startOfMinute(addHours(day, hour))
+  }
+  const secondSlotStartHour = startOfMinute(addMinutes(firstSlotStartHour, 30))
 
   const ifSlotSelected = slotStart => {
     return (
@@ -32,9 +44,11 @@ const HourSlot = ({
       (isSameMinute(slotStart, selectedWindow.start) ||
         (isAfter(slotStart, selectedWindow.start) &&
           isBefore(slotStart, selectedWindow.end)))
-    );
-  };
-
+    )
+  }
+  if (startTZO > endTZO && zoneOffsetBefore !== endTZO) {
+    return <div className={'dst-div'}>DST HOUR</div>
+  }
   return (
     <>
       <HalfAnHourSlot
@@ -68,7 +82,7 @@ const HourSlot = ({
         highestIndex={highestIndex}
       />
     </>
-  );
-};
+  )
+}
 
-export default HourSlot;
+export default HourSlot

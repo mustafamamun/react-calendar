@@ -1,39 +1,45 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState } from 'react'
 import {
   eachDayOfInterval,
   addMinutes,
   isBefore,
   isSameDay,
-  startOfDay
-} from 'date-fns';
-import { isEmpty, sortBy } from 'lodash';
+  startOfDay,
+  endOfMinute
+} from 'date-fns'
+import { isEmpty, sortBy } from 'lodash'
 
-import { CalContext } from '../../context/Context';
-import WeekRowWithDate from '../week-row/WeekRowWithDate';
-import { Grid, GridRow, GridColumn } from 'semantic-ui-react';
-import { timeSlots, getEventsOfTheDay, getEventIndex } from '../utils';
-import TimeSlotsInDay from '../time-slots-in-day/TimeSlotsInDay';
+import { CalContext } from '../../context/Context'
+import WeekRowWithDate from '../week-row/WeekRowWithDate'
+import { Grid, GridRow, GridColumn } from 'semantic-ui-react'
+import {
+  timeSlots,
+  getEventsOfTheDay,
+  getEventIndex,
+  getHighestIndex
+} from '../utils'
+import TimeSlotsInDay from '../time-slots-in-day/TimeSlotsInDay'
 
-const Week = ({ currentTime, events }) => {
-  const { viewWindow } = useContext(CalContext);
-  const [selectedWindow, setSelectedWindow] = useState({});
+const Week = ({ currentTime, events, onSelect, onClickedEvent }) => {
+  const { viewWindow } = useContext(CalContext)
+  const [selectedWindow, setSelectedWindow] = useState({})
   const onMouseClick = e => {
-    e.preventDefault();
+    e.preventDefault()
     setSelectedWindow({
       start: new Date(e.target.id),
-      end: addMinutes(new Date(e.target.id), '30')
-    });
-  };
+      end: endOfMinute(addMinutes(new Date(e.target.id), 29))
+    })
+  }
   const eachDayInWeek = eachDayOfInterval({
     start: viewWindow.start,
     end: viewWindow.end
-  });
+  })
   const onMouseUp = e => {
     if (!isEmpty(selectedWindow)) {
-      console.log(selectedWindow);
-      setSelectedWindow({});
+      onSelect(selectedWindow)
+      setSelectedWindow({})
     }
-  };
+  }
   const onMouseOver = e => {
     if (
       !isEmpty(selectedWindow) &&
@@ -42,19 +48,19 @@ const Week = ({ currentTime, events }) => {
     ) {
       setSelectedWindow({
         ...selectedWindow,
-        end: addMinutes(new Date(e.target.id), 30)
-      });
+        end: endOfMinute(addMinutes(new Date(e.target.id), 29))
+      })
     }
     if (isBefore(new Date(e.target.id), selectedWindow.start)) {
       setSelectedWindow({
         ...selectedWindow,
-        end: addMinutes(selectedWindow.start, 30)
-      });
+        end: endOfMinute(addMinutes(selectedWindow.start, 29))
+      })
     }
-  };
+  }
   const onClickEvent = e => {
-    console.log(e);
-  };
+    onClickedEvent(e)
+  }
   return (
     <Grid columns={8}>
       <WeekRowWithDate allDates={eachDayInWeek} />
@@ -65,19 +71,13 @@ const Week = ({ currentTime, events }) => {
               <GridRow key={time} className={'time-slot'}>
                 <b>{time}</b>
               </GridRow>
-            );
+            )
           })}
         </GridColumn>
         {eachDayInWeek.map(day => {
-          const eventsOfTheDay = getEventsOfTheDay(startOfDay(day), events);
-          const eventWithIndex = getEventIndex(sortBy(eventsOfTheDay, 'start'));
-          const highestIndex = isEmpty(eventWithIndex)
-            ? 1
-            : eventWithIndex.reduce((prev, current) =>
-                prev.calprops.position > current.calprops.position
-                  ? prev
-                  : current
-              ).calprops.position + 1;
+          const eventsOfTheDay = getEventsOfTheDay(startOfDay(day), events)
+          const eventWithIndex = getEventIndex(sortBy(eventsOfTheDay, 'start'))
+          const highestIndex = getHighestIndex(eventWithIndex)
           return (
             <GridColumn
               key={day.toISOString()}
@@ -97,11 +97,11 @@ const Week = ({ currentTime, events }) => {
                 highestIndex={highestIndex}
               />
             </GridColumn>
-          );
+          )
         })}
       </GridRow>
     </Grid>
-  );
-};
+  )
+}
 
-export default Week;
+export default Week

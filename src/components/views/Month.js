@@ -20,7 +20,7 @@ import WeekRow from '../week-row/WeekRow';
 import { CalContext } from '../../context/Context';
 import { getEventsOfTheDay } from '../utils';
 
-const Month = ({ currentTime, events }) => {
+const Month = ({ currentTime, events, onSelect, onClickedEvent }) => {
   const { viewWindow, setViewWindow, setView } = useContext(CalContext);
   const [dayWidth, setDayWidth] = useState(0);
   const eachDay = eachDayOfInterval({
@@ -37,7 +37,7 @@ const Month = ({ currentTime, events }) => {
   };
   const onMouseUp = e => {
     if (!isEmpty(selectedWindow)) {
-      console.log(selectedWindow);
+      onSelect(selectedWindow);
       setSelectedWindow({});
     }
   };
@@ -111,8 +111,17 @@ const Month = ({ currentTime, events }) => {
     setViewWindow({ start: startOfDay(day), end: endOfDay(day) });
     setView('day');
   };
+  const eventWidth = (day, e) => {
+    return (
+      dayWidth *
+        (isBefore(endOfWeek(day), e.end)
+          ? getDate(endOfWeek(day)) - getDate(day) + 1
+          : getDate(e.end) - getDate(day) + 1) -
+      10
+    );
+  };
   const onEventClicked = e => {
-    console.log(e);
+    onClickedEvent(e);
   };
 
   return (
@@ -165,17 +174,9 @@ const Month = ({ currentTime, events }) => {
                       (isSameDay(day, startOfWeek(day)) &&
                         isBefore(e.start, startOfWeek(day)))) && (
                       <div
+                        className={'event-title-month'}
                         style={{
-                          position: 'absolute',
-                          width: `${dayWidth *
-                            (isBefore(endOfWeek(day), e.end)
-                              ? getDate(endOfWeek(day)) - getDate(day) + 1
-                              : getDate(e.end) - getDate(day) + 1) -
-                            10}px`,
-                          zIndex: '10000',
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                          textOverflow: 'ellipsis'
+                          width: `${eventWidth(day, e)}px`
                         }}
                       >
                         {e.title}

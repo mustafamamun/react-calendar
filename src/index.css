@@ -248,3 +248,29 @@
   border-right: 1px solid#DDDDDD;
   padding: 3px !important;
 }
+
+.event-title-month {
+  position: absolute;
+  z-index: 10000;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: normal;
+  font-size: medium;
+}
+.title-box-day-wk {
+  position: absolute;
+  z-index: 10000;
+  word-break: break-all;
+  line-height: normal;
+  overflow: hidden;
+  font-family: 'Times New Roman';
+}
+
+.dst-div {
+  background-color: black;
+  color: white;
+  height: 50px;
+  padding-top: 15px;
+  text-align: center;
+}

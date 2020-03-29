@@ -1,29 +1,34 @@
-import React, { useContext, useState } from 'react';
-import { Grid, GridRow, GridColumn } from 'semantic-ui-react';
+import React, { useContext, useState } from 'react'
+import { Grid, GridRow, GridColumn } from 'semantic-ui-react'
 
-import TimeSlotsInDay from '../time-slots-in-day/TimeSlotsInDay';
-import { CalContext } from '../../context/Context';
+import TimeSlotsInDay from '../time-slots-in-day/TimeSlotsInDay'
+import { CalContext } from '../../context/Context'
 
-import { timeSlots, getEventsOfTheDay, getEventIndex } from '../utils';
-import { addMinutes, isBefore, isSameDay } from 'date-fns';
-import { isEmpty, sortBy } from 'lodash';
+import {
+  timeSlots,
+  getEventsOfTheDay,
+  getEventIndex,
+  getHighestIndex
+} from '../utils'
+import { addMinutes, isBefore, isSameDay, endOfMinute } from 'date-fns'
+import { isEmpty, sortBy } from 'lodash'
 
-const Day = ({ currentTime, events }) => {
-  const { viewWindow } = useContext(CalContext);
-  const [selectedWindow, setSelectedWindow] = useState({});
+const Day = ({ currentTime, events, onSelect, onClickedEvent }) => {
+  const { viewWindow } = useContext(CalContext)
+  const [selectedWindow, setSelectedWindow] = useState({})
   const onMouseClick = e => {
-    e.preventDefault();
+    e.preventDefault()
     setSelectedWindow({
       start: new Date(e.target.id),
-      end: addMinutes(new Date(e.target.id), '30')
-    });
-  };
+      end: endOfMinute(addMinutes(new Date(e.target.id), 29))
+    })
+  }
   const onMouseUp = e => {
     if (!isEmpty(selectedWindow)) {
-      console.log(selectedWindow);
-      setSelectedWindow({});
+      onSelect(selectedWindow)
+      setSelectedWindow({})
     }
-  };
+  }
   const onMouseOver = e => {
     if (
       !isEmpty(selectedWindow) &&
@@ -32,28 +37,23 @@ const Day = ({ currentTime, events }) => {
     ) {
       setSelectedWindow({
         ...selectedWindow,
-        end: addMinutes(new Date(e.target.id), 30)
-      });
+        end: endOfMinute(addMinutes(new Date(e.target.id), 29))
+      })
     }
     if (isBefore(new Date(e.target.id), selectedWindow.start)) {
       setSelectedWindow({
         ...selectedWindow,
-        end: addMinutes(selectedWindow.start, 30)
-      });
+        end: endOfMinute(addMinutes(selectedWindow.start, 29))
+      })
     }
-  };
-  const sortedEvents = sortBy(events, 'start');
-  const eventsOfTheDay = getEventsOfTheDay(viewWindow.start, sortedEvents);
+  }
   const onClickEvent = e => {
-    console.log(e);
-  };
-  const eventWithIndex = getEventIndex(eventsOfTheDay);
-  const highestIndex =
-    eventWithIndex.length > 0
-      ? eventWithIndex.reduce((prev, current) =>
-          prev.calprops.position > current.calprops.position ? prev : current
-        ).calprops.position + 1
-      : 1;
+    onClickedEvent(e)
+  }
+  const sortedEvents = sortBy(events, 'start')
+  const eventsOfTheDay = getEventsOfTheDay(viewWindow.start, sortedEvents)
+  const eventWithIndex = getEventIndex(eventsOfTheDay)
+  const highestIndex = getHighestIndex(eventWithIndex)
 
   return (
     <Grid>
@@ -70,7 +70,7 @@ const Day = ({ currentTime, events }) => {
               <GridRow key={i} className={'time-slot'}>
                 <b>{time}</b>
               </GridRow>
-            );
+            )
           })}
         </GridColumn>
         <GridColumn
@@ -93,7 +93,7 @@ const Day = ({ currentTime, events }) => {
         </GridColumn>
       </GridRow>
     </Grid>
-  );
-};
+  )
+}
 
-export default Day;
+export default Day

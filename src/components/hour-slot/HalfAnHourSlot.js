@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
   getMinutes,
   isSameMinute,
@@ -8,9 +8,9 @@ import {
   isSameSecond,
   startOfDay,
   differenceInMinutes
-} from 'date-fns';
+} from 'date-fns'
 
-import { getEventOfTheSlot, getEventTime, getHight } from '../utils';
+import { getEventOfTheSlot, getEventTime, getHight } from '../utils'
 
 const HalfAnHourSlot = ({
   currentTime,
@@ -32,8 +32,44 @@ const HalfAnHourSlot = ({
     width: '100%',
     top: `${Math.floor(((getMinutes(currentTime) % 30) / 30) * 24)}px`,
     zIndex: 100000000000000
-  };
-  const eventsOfTheSlot = getEventOfTheSlot(slotStart, events);
+  }
+  const eventStyle = e => {
+    return {
+      width: `${100 / highestIndex}%`,
+      position: 'absolute',
+      left: `${(100 / highestIndex) * e.calprops.position}%`,
+      padding: 0,
+      marginTop: `${getMarginTop(e, slotStart)}px`,
+      height: `${getHeight(e, slotStart)}px`
+    }
+  }
+  const getMarginTop = (e, slotStart) => {
+    return isEventStartOnSlot(e, slotStart) &&
+      differenceInMinutes(e.end, e.start) / 15 > 1
+      ? differenceInMinutes(e.start, slotStart) > 0
+        ? Math.round((differenceInMinutes(e.start, slotStart) * 25) / 30)
+        : -1
+      : -1
+  }
+  const getHeight = (e, slotStart) => {
+    if (
+      isEventStartOnSlot(e, slotStart) &&
+      differenceInMinutes(e.end, e.start) / 15
+    ) {
+      return 25 - getMarginTop(e, slotStart)
+    } else {
+      return isEventEndOnSlot(e, slotStart) &&
+        differenceInMinutes(e.end, e.start) / 15 > 1
+        ? differenceInMinutes(addMinutes(slotStart, 30), e.end) > 0
+          ? 26 -
+            Math.round(
+              (differenceInMinutes(addMinutes(slotStart, 30), e.end) * 25) / 30
+            )
+          : 26
+        : 26
+    }
+  }
+  const eventsOfTheSlot = getEventOfTheSlot(slotStart, events)
   const isEventStartOnSlot = (e, slotStart) => {
     return (
       isSameSecond(slotStart, e.start) ||
@@ -41,8 +77,8 @@ const HalfAnHourSlot = ({
         start: slotStart,
         end: addMinutes(slotStart, 30)
       })
-    );
-  };
+    )
+  }
   const isEventEndOnSlot = (e, slotStart) => {
     return (
       isSameSecond(addMinutes(slotStart, 30), e.end) ||
@@ -50,8 +86,9 @@ const HalfAnHourSlot = ({
         start: slotStart,
         end: addMinutes(slotStart, 30)
       })
-    );
-  };
+    )
+  }
+
   return (
     <div {...rest}>
       {isSameMinute(slotStart, selectedWindow.start) && (
@@ -68,50 +105,17 @@ const HalfAnHourSlot = ({
       ) : (
         ''
       )}
-      {eventsOfTheSlot.map(e => {
+      {eventsOfTheSlot.map((e, i) => {
         return (
           <div
-            key={`${e.start}${slotStart}${e.title}`}
-            style={{
-              width: `${100 / highestIndex}%`,
-              position: 'absolute',
-              left: `${(100 / highestIndex) * e.calprops.position}%`,
-              padding: 0,
-              marginTop:
-                isEventStartOnSlot(e, slotStart) &&
-                differenceInMinutes(e.end, e.start) / 20 > 1
-                  ? `${
-                      differenceInMinutes(e.start, slotStart) > 0
-                        ? Math.round(
-                            (differenceInMinutes(e.start, slotStart) * 25) / 30
-                          )
-                        : -1
-                    }px`
-                  : '-1px',
-              height:
-                isEventEndOnSlot(e, slotStart) &&
-                differenceInMinutes(e.end, e.start) / 20 > 1
-                  ? `${
-                      differenceInMinutes(addMinutes(slotStart, 30), e.end) > 0
-                        ? 26 -
-                          Math.round(
-                            (differenceInMinutes(
-                              addMinutes(slotStart, 30),
-                              e.end
-                            ) *
-                              25) /
-                              30
-                          )
-                        : 26
-                    }px`
-                  : '26px'
-            }}
+            key={`${e.start}${slotStart}${e.title}${i}`}
+            style={eventStyle(e)}
             className={`evnet-basic-slot ${
               isEventStartOnSlot(e, slotStart) ? 'event-start-slot' : ''
             } ${isEventEndOnSlot(e, slotStart) ? 'event-end-slot' : ''}`}
             onMouseDown={event => {
-              event.stopPropagation();
-              onClickEvent(e);
+              event.stopPropagation()
+              onClickEvent(e)
             }}
           >
             {' '}
@@ -119,25 +123,19 @@ const HalfAnHourSlot = ({
               isSameMinute(startOfDay(slotStart), slotStart)) && (
               <div
                 id={'title-box'}
+                className={'title-box-day-wk'}
                 style={{
-                  position: 'absolute',
-                  zIndex: '10000',
-                  wordBreak: 'break-all',
-                  lineHeight: 'normal',
-                  height: `${getHight(e.start, e.end)}px`,
-                  overflow: 'hidden'
+                  height: `${getHight(e.start, e.end)}px`
                 }}
               >
-                {getEventTime(e, slotStart)}
-                <br />
-                {e.title}
+                {getEventTime(e, slotStart)},{e.title}
               </div>
             )}
           </div>
-        );
+        )
       })}
     </div>
-  );
-};
+  )
+}
 
-export default HalfAnHourSlot;
+export default HalfAnHourSlot
