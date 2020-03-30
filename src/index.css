@@ -120,6 +120,8 @@
   font-size: xx-small;
   line-height: normal;
   font-weight: bold;
+  position: absolute;
+  width: 100%;
 }
 
 .day-container {

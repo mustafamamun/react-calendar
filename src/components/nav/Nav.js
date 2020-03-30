@@ -194,28 +194,13 @@ const Nav = ({ onNavigation, onViewChange }) => {
   return (
     <Grid stackable>
       <GridRow>
-        <GridColumn
-          width={1}
-          // as={Button}
-          className='p-1'
-          onClick={setToday}
-        >
+        <GridColumn width={1} className='p-1' onClick={setToday}>
           <button className='ui mini button nav-btn'>Today</button>
         </GridColumn>
-        <GridColumn
-          width={1}
-          // as={Button}
-          className='p-1'
-          onClick={onBack}
-        >
+        <GridColumn width={1} className='p-1' onClick={onBack}>
           <button className='ui mini button nav-btn'>Back</button>
         </GridColumn>
-        <GridColumn
-          width={1}
-          // as={Button}
-          className='p-1'
-          onClick={onNext}
-        >
+        <GridColumn width={1} className='p-1' onClick={onNext}>
           <button className='ui mini button nav-btn'>Next</button>
         </GridColumn>
         <GridColumn width={9} as={'div'} className={'nav-text-center p-1'}>
@@ -260,36 +245,16 @@ const Nav = ({ onNavigation, onViewChange }) => {
             </b>
           )}
         </GridColumn>
-        <GridColumn
-          width={1}
-          // as={Button}
-          className='p-1'
-          onClick={setMonthView}
-        >
+        <GridColumn width={1} className='p-1' onClick={setMonthView}>
           <button className='ui mini button nav-btn'>Month</button>
         </GridColumn>
-        <GridColumn
-          width={1}
-          // as={Button}
-          className='p-1'
-          onClick={setWeekView}
-        >
+        <GridColumn width={1} className='p-1' onClick={setWeekView}>
           <button className='ui mini button nav-btn'>Week</button>
         </GridColumn>
-        <GridColumn
-          width={1}
-          // as={Button}
-          className='p-1'
-          onClick={setDayView}
-        >
+        <GridColumn width={1} className='p-1' onClick={setDayView}>
           <button className='ui mini button nav-btn'>Day</button>
         </GridColumn>
-        <GridColumn
-          width={1}
-          // as={Button}
-          className='p-1'
-          onClick={setAgendaView}
-        >
+        <GridColumn width={1} className='p-1' onClick={setAgendaView}>
           <button className='ui mini button nav-btn'>Agenda</button>
         </GridColumn>
       </GridRow>

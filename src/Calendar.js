@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Container } from 'semantic-ui-react'
 import { Context } from './context/Context'
 import Nav from './components/nav/Nav'
@@ -18,12 +18,14 @@ function Calendar({
     {
       start: new Date('2020-03-29T22:50:00+03:00'),
       end: new Date('2020-03-29T23:10:00+03:00'),
-      title: 'This is a event on mac sdsdfg asdfas asdfsa asfa asdfa asdfasdf'
+      title:
+        'This is a event on mac sdsdfg asdfasasdf  asdfsa asfa asdfa asdfasdf'
     },
     {
       start: new Date('2020-03-29T22:50:00+03:00'),
       end: new Date('2020-03-29T23:10:00+03:00'),
-      title: 'This is a event on mac sdsdfg asdfas asdfsa asfa asdfa asdfasdf'
+      title:
+        'This is a event on mac sdsdfg asdfas asdfsa asdfasfa asdfa asdfasdf'
     }
   ]
 }) {
@@ -41,7 +43,7 @@ function Calendar({
   }, 5 * 60 * 1000)
 
   return (
-    <Context defaultView={'day'}>
+    <Context defaultView={'month'}>
       <Container className='mt-5'>
         <Nav onNavigation={onNavigation} onViewChange={onViewChange} />
         <Views
