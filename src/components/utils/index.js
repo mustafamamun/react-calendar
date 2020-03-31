@@ -10,7 +10,8 @@ import {
   getHours,
   getMinutes,
   endOfMinute,
-  differenceInMinutes
+  differenceInMinutes,
+  isSameHour
 } from 'date-fns'
 import { isEmpty } from 'lodash'
 
@@ -189,10 +190,13 @@ export const getEventTime = (e, slotStart) => {
   return `${start} - ${end}`
 }
 
-export const getHight = (start, end) => {
-  const diff = differenceInMinutes(end, start)
-  if (getHours(start) === getHours(end))
-    return diff > 15 ? (diff < 1440 ? (diff * 24) / 30 : (1440 * 24) / 30) : 24
-  else
+export const getHight = (start, end, slotStart) => {
+  const startTime = isBefore(start, slotStart) ? slotStart : start
+  const endTime = isAfter(end, endOfDay(slotStart)) ? endOfDay(slotStart) : end
+  const diff = differenceInMinutes(endTime, startTime)
+  if (isSameHour(start, end)) {
+    return diff > 15 ? (diff * 24) / 30 : 24
+  } else {
     return diff > 15 ? (diff < 1440 ? (diff * 24) / 30 : (1440 * 24) / 30) : 50
+  }
 }

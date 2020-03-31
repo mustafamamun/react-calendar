@@ -16,18 +16,19 @@ export const Context = ({ defaultView = 'month', ...rest }) => {
   )
   const [viewWindow, setViewWindow] = useState({
     start:
-      view === 'month' || 'agenda'
-        ? flow(startOfMonth, startOfWeek)(new Date())
+      defaultView === 'day'
+        ? startOfDay(new Date())
         : view === 'week'
         ? startOfWeek(new Date())
-        : startOfDay(new Date()),
+        : flow(startOfMonth, startOfWeek)(new Date()),
     end:
-      view === 'month' || 'agenda'
-        ? flow(endOfMonth, endOfWeek)(new Date())
+      defaultView === 'day'
+        ? endOfDay(new Date())
         : view === 'week'
         ? endOfWeek(new Date())
-        : endOfDay(new Date())
+        : flow(endOfMonth, endOfWeek)(new Date())
   })
+
   return (
     <CalContext.Provider
       value={{ view, setView, viewWindow, setViewWindow }}
