@@ -11,7 +11,12 @@ import {
 } from 'date-fns'
 import { omit } from 'lodash'
 
-import { getEventOfTheSlot, getEventTime, getHight } from '../utils'
+import {
+  getEventOfTheSlot,
+  getEventTime,
+  getHight,
+  lastSlotOfTheDayAndOcupied
+} from '../utils'
 
 const HalfAnHourSlot = ({
   currentTime,
@@ -53,6 +58,9 @@ const HalfAnHourSlot = ({
       : -1
   }
   const getHeight = (e, slotStart) => {
+    if (lastSlotOfTheDayAndOcupied(slotStart, e)) {
+      return 24
+    }
     if (
       isEventStartOnSlot(e, slotStart) &&
       differenceInMinutes(e.end, e.start) / 15

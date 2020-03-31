@@ -200,3 +200,17 @@ export const getHight = (start, end, slotStart) => {
     return diff > 15 ? (diff < 1440 ? (diff * 24) / 30 : (1440 * 24) / 30) : 50
   }
 }
+
+export const lastSlotOfTheDayAndOcupied = (slotStart, e) => {
+  const hour = getHours(slotStart)
+  const minute = getMinutes(slotStart)
+  if (
+    hour === 23 &&
+    minute === 30 &&
+    isBefore(e.start, slotStart) &&
+    isAfter(e.end, addMinutes(slotStart, 30))
+  ) {
+    return true
+  }
+  return false
+}

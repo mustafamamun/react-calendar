@@ -23,7 +23,7 @@ function Calendar({
     // },
     {
       start: new Date('2020-04-01T19:50:00+03:00'),
-      end: new Date('2020-04-03T20:10:00+03:00'),
+      end: new Date('2020-04-03T20:30:00+03:00'),
       title:
         'This is a event on mac sdsdfg asdfas asdfsa asdfasfa asdfa asdfasdf'
     }
