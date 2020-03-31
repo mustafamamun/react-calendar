@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react'
 import {
   eachDayOfInterval,
   isBefore,
@@ -10,55 +10,62 @@ import {
   endOfDay,
   startOfMonth,
   startOfWeek,
-  endOfWeek
-} from 'date-fns';
-import { Grid, GridColumn, GridRow } from 'semantic-ui-react';
-import { getDate } from 'date-fns/esm';
-import { isEmpty, sortBy, slice, flow, get } from 'lodash';
+  endOfWeek,
+  isValid
+} from 'date-fns'
+import { Grid, GridColumn, GridRow } from 'semantic-ui-react'
+import { getDate } from 'date-fns/esm'
+import { isEmpty, sortBy, slice, flow, get, omit } from 'lodash'
 
-import WeekRow from '../week-row/WeekRow';
-import { CalContext } from '../../context/Context';
-import { getEventsOfTheDay } from '../utils';
+import WeekRow from '../week-row/WeekRow'
+import { CalContext } from '../../context/Context'
+import { getEventsOfTheDay } from '../utils'
 
 const Month = ({ currentTime, events, onSelect, onClickedEvent }) => {
-  const { viewWindow, setViewWindow, setView } = useContext(CalContext);
-  const [dayWidth, setDayWidth] = useState(0);
+  const { viewWindow, setViewWindow, setView } = useContext(CalContext)
+  const [dayWidth, setDayWidth] = useState(0)
   const eachDay = eachDayOfInterval({
     start: viewWindow.start,
     end: viewWindow.end
-  });
-  const [selectedWindow, setSelectedWindow] = useState({});
+  })
+  const [selectedWindow, setSelectedWindow] = useState({})
   const onMouseClick = e => {
-    e.preventDefault();
-    setSelectedWindow({
-      start: new Date(e.target.id),
-      end: endOfDay(new Date(e.target.id))
-    });
-  };
+    e.preventDefault()
+    if (isEmpty(selectedWindow) && isValid(new Date(e.target.id))) {
+      setSelectedWindow({
+        start: new Date(e.target.id),
+        end: endOfDay(new Date(e.target.id))
+      })
+    }
+  }
   const onMouseUp = e => {
     if (!isEmpty(selectedWindow)) {
-      onSelect(selectedWindow);
-      setSelectedWindow({});
+      onSelect(selectedWindow)
+      setSelectedWindow({})
     }
-  };
+  }
   const onMouseOver = e => {
     if (
       !isEmpty(selectedWindow) &&
-      e.target.id &&
+      isValid(new Date(e.target.id)) &&
       !isBefore(new Date(e.target.id), selectedWindow.start)
     ) {
       setSelectedWindow({
         ...selectedWindow,
         end: endOfDay(new Date(e.target.id))
-      });
+      })
     }
-    if (isBefore(new Date(e.target.id), selectedWindow.start)) {
+    if (
+      !isEmpty(selectedWindow) &&
+      isValid(new Date(e.target.id)) &&
+      isBefore(new Date(e.target.id), selectedWindow.start)
+    ) {
       setSelectedWindow({
         ...selectedWindow,
         end: endOfDay(selectedWindow.start)
-      });
+      })
     }
-  };
+  }
 
   useEffect(() => {
     setDayWidth(
@@ -67,18 +74,22 @@ const Month = ({ currentTime, events, onSelect, onClickedEvent }) => {
         'offsetWidth',
         0
       )
-    );
-  });
+    )
+    window.addEventListener('resize', resizeListener)
+    return () => {
+      window.removeEventListener('resize', resizeListener, false)
+    }
+  })
 
-  window.onresize = () => {
+  const resizeListener = () => {
     setDayWidth(
       get(
         document.getElementById(startOfDay(viewWindow.start)),
         'offsetWidth',
         0
       )
-    );
-  };
+    )
+  }
 
   const ifSlotSelected = slotStart => {
     return (
@@ -86,9 +97,9 @@ const Month = ({ currentTime, events, onSelect, onClickedEvent }) => {
       (isSameMinute(slotStart, selectedWindow.start) ||
         (isAfter(slotStart, selectedWindow.start) &&
           isBefore(slotStart, selectedWindow.end)))
-    );
-  };
-  const sortedEvents = sortBy(events, 'start');
+    )
+  }
+  const sortedEvents = sortBy(events, 'start')
   const isEventStartOnDay = (e, day) => {
     return (
       isSameMinute(startOfDay(day), e.start) ||
@@ -96,8 +107,8 @@ const Month = ({ currentTime, events, onSelect, onClickedEvent }) => {
         start: startOfDay(day),
         end: endOfDay(day)
       })
-    );
-  };
+    )
+  }
   const isEventEndOnDay = (e, day) => {
     return (
       isSameMinute(endOfDay(day), e.end) ||
@@ -105,12 +116,12 @@ const Month = ({ currentTime, events, onSelect, onClickedEvent }) => {
         start: startOfDay(day),
         end: endOfDay(day)
       })
-    );
-  };
+    )
+  }
   const onMoreClicked = day => {
-    setViewWindow({ start: startOfDay(day), end: endOfDay(day) });
-    setView('day');
-  };
+    setViewWindow({ start: startOfDay(day), end: endOfDay(day) })
+    setView('day')
+  }
   const eventWidth = (day, e) => {
     return (
       dayWidth *
@@ -118,20 +129,20 @@ const Month = ({ currentTime, events, onSelect, onClickedEvent }) => {
           ? getDate(endOfWeek(day)) - getDate(day) + 1
           : getDate(e.end) - getDate(day) + 1) -
       10
-    );
-  };
+    )
+  }
   const onEventClicked = e => {
-    onClickedEvent(e);
-  };
+    onClickedEvent(e)
+  }
 
   return (
     <Grid columns={7}>
       <WeekRow />
       <GridRow className={'pt-0'}>
         {eachDay.map(day => {
-          const date = getDate(day);
-          const eventsOfTheDay = getEventsOfTheDay(day, sortedEvents);
-          const firstTwoEvents = slice(eventsOfTheDay, 0, 2);
+          const date = getDate(day)
+          const eventsOfTheDay = getEventsOfTheDay(day, sortedEvents)
+          const firstTwoEvents = slice(eventsOfTheDay, 0, 2)
           return (
             <GridColumn
               as={'div'}
@@ -157,8 +168,8 @@ const Month = ({ currentTime, events, onSelect, onClickedEvent }) => {
                 return (
                   <div
                     onMouseDown={event => {
-                      event.stopPropagation();
-                      onEventClicked(e);
+                      event.stopPropagation()
+                      onEventClicked(omit(e, 'calprops'))
                     }}
                     className={`evt-base ${
                       isEventStartOnDay(e, day) ? 'event-start' : ''
@@ -183,25 +194,25 @@ const Month = ({ currentTime, events, onSelect, onClickedEvent }) => {
                       </div>
                     )}
                   </div>
-                );
+                )
               })}
               {eventsOfTheDay.length > 2 && (
                 <div
                   className={'more-events-link'}
                   onMouseDown={event => {
-                    event.stopPropagation();
-                    onMoreClicked(day);
+                    event.stopPropagation()
+                    onMoreClicked(day)
                   }}
                 >
                   + {eventsOfTheDay.length - 2} more events
                 </div>
               )}
             </GridColumn>
-          );
+          )
         })}
       </GridRow>
     </Grid>
-  );
-};
+  )
+}
 
-export default Month;
+export default Month

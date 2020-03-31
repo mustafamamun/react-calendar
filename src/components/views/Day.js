@@ -10,7 +10,7 @@ import {
   getEventIndex,
   getHighestIndex
 } from '../utils'
-import { addMinutes, isBefore, isSameDay, endOfMinute } from 'date-fns'
+import { addMinutes, isBefore, isSameDay, endOfMinute, isValid } from 'date-fns'
 import { isEmpty, sortBy } from 'lodash'
 
 const Day = ({ currentTime, events, onSelect, onClickedEvent }) => {
@@ -18,10 +18,12 @@ const Day = ({ currentTime, events, onSelect, onClickedEvent }) => {
   const [selectedWindow, setSelectedWindow] = useState({})
   const onMouseClick = e => {
     e.preventDefault()
-    setSelectedWindow({
-      start: new Date(e.target.id),
-      end: endOfMinute(addMinutes(new Date(e.target.id), 29))
-    })
+    if (isEmpty(selectedWindow) && isValid(new Date(e.target.id))) {
+      setSelectedWindow({
+        start: new Date(e.target.id),
+        end: endOfMinute(addMinutes(new Date(e.target.id), 29))
+      })
+    }
   }
   const onMouseUp = e => {
     if (!isEmpty(selectedWindow)) {
@@ -29,10 +31,11 @@ const Day = ({ currentTime, events, onSelect, onClickedEvent }) => {
       setSelectedWindow({})
     }
   }
+
   const onMouseOver = e => {
     if (
       !isEmpty(selectedWindow) &&
-      e.target.id &&
+      isValid(new Date(e.target.id)) &&
       !isBefore(new Date(e.target.id), selectedWindow.start)
     ) {
       setSelectedWindow({
@@ -40,7 +43,11 @@ const Day = ({ currentTime, events, onSelect, onClickedEvent }) => {
         end: endOfMinute(addMinutes(new Date(e.target.id), 29))
       })
     }
-    if (isBefore(new Date(e.target.id), selectedWindow.start)) {
+    if (
+      !isEmpty(selectedWindow) &&
+      isValid(new Date(e.target.id)) &&
+      isBefore(new Date(e.target.id), selectedWindow.start)
+    ) {
       setSelectedWindow({
         ...selectedWindow,
         end: endOfMinute(addMinutes(selectedWindow.start, 29))

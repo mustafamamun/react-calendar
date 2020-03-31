@@ -9,6 +9,7 @@ import {
   startOfDay,
   differenceInMinutes
 } from 'date-fns'
+import { omit } from 'lodash'
 
 import { getEventOfTheSlot, getEventTime, getHight } from '../utils'
 
@@ -115,7 +116,7 @@ const HalfAnHourSlot = ({
             } ${isEventEndOnSlot(e, slotStart) ? 'event-end-slot' : ''}`}
             onMouseDown={event => {
               event.stopPropagation()
-              onClickEvent(e)
+              onClickEvent(omit(e, 'calprops'))
             }}
           >
             {' '}
