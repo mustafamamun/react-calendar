@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import {
   getMinutes,
   isSameMinute,
@@ -7,8 +7,7 @@ import {
   addMinutes,
   isSameSecond,
   startOfDay,
-  differenceInMinutes,
-  endOfMinute
+  differenceInMinutes
 } from 'date-fns'
 import { omit } from 'lodash'
 

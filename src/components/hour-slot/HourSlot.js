@@ -7,7 +7,6 @@ import {
   subHours
 } from 'date-fns'
 import HalfAnHourSlot from './HalfAnHourSlot'
-import { ifSlotSelected } from '../utils/index'
 
 const HourSlot = ({
   day,
@@ -40,7 +39,7 @@ const HourSlot = ({
     return <div className={'dst-div'}>DST HOUR</div>
   }
   return (
-    <>
+    <div>
       <HalfAnHourSlot
         className={`first-half-an-hour ${
           isAfter(currentTime, firstSlotStartHour) ? 'disable' : ''
@@ -71,7 +70,7 @@ const HourSlot = ({
         onClickEvent={onClickEvent}
         highestIndex={highestIndex}
       />
-    </>
+    </div>
   )
 }
 
