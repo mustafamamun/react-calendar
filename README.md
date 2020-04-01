@@ -1,11 +1,63 @@
-## React Calendar
+# Intro
 
-3058872c6bff40f1958e6412605776b9b481eca02c30bdf49c2b87bf48bd9a5e
+This is a event based calendar for react
 
-b50b9dc4657e37f43201675ed2b997e5f898a14852d8639de08a52923e0427f0
+# Setup
 
-fe31979e612763a22a825fc75faf303a676f4c71943ccb1f088e407a7032747a
+    npm install react-calendar-basic
+    yarn add react-calendar-basic
 
-98b071d133b9adc0cd41f05434e4aeece9a56c52fd1ac76e76150f05aa1abed7
+## Use
 
-c3d734231dcf33775f25ccc4abf974cc427016b569304ef93b66da7f6f78a2bc
+    import React from  'react'
+    import Calendar from  'react-calendar-basic'
+    import  'react-calendar-basic/dist/style/styles.css'
+
+    function  App() {
+    	const  onClickedEvent  =  e  =>  {
+    		console.log(e)
+    	}
+    	const  onSelect  =  e  =>  {
+    		console.log(e)
+    	}
+    	const  onNavigation  =  e  =>  {
+    		console.log(e)
+    	}
+    	const  onViewChange  =  e  =>  {
+    		console.log(e)
+    	}
+    	const  events  =  [{
+    		start:  new  Date('2020-03-31T19:50:00+03:00'),
+    		end:  new  Date('2020-03-31T21:10:00+03:00'),
+    		title:  'Example event'
+    		}]
+    	return (
+    		<div  className='App'>
+    			<Calendar
+    			defaultView={'month'}
+    			onNavigation={onNavigation}
+    			onViewChange={onViewChange}
+    			events={events}
+    			onSelect={onSelect}
+    			onClickedEvent={onClickedEvent}
+    			/>
+    		</div>
+    		)
+    }
+    export  default  App
+
+# Props
+
+| Prop           | Required | Type     | Description                                                                     |
+| -------------- | -------- | -------- | ------------------------------------------------------------------------------- |
+| onNavigation   | True     | Function | Callback funciton triggered when navigation happens                             |
+| onNavigation   | True     | Function | Callback funciton triggered when navigation happens                             |
+| onViewChange   | True     | Function | Callback funciton triggered on view change                                      |
+| onSelect       | True     | Function | Calback function triggered when selection ends                                  |
+| onClickedEvent | True     | Function | Calback function triggered when selection ends                                  |
+| events         | True     | Array    | Array of event object. Event object = {start: Date , end: Date, title: String } |
+| default view   | false    | Enum     | One of 'month', 'day', 'week', 'agenda'                                         |  |
+
+# TO DO
+
+    Disable days and hours from the calendar, user style input
