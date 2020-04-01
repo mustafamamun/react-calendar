@@ -104,7 +104,7 @@
 }
 
 .selected {
-  background-color: #a7c8f4;
+  background-color: red;
 }
 
 ::-moz-selection {
@@ -123,7 +123,9 @@
   position: absolute;
   width: 100%;
   z-index: 1000000000000000;
-  background-color: #a7c8f4;
+  background-color: red;
+  height: 100%;
+  pointer-events: none;
 }
 
 .day-container {
@@ -276,6 +278,7 @@
   line-height: normal;
   overflow: hidden;
   font-family: 'Times New Roman';
+  pointer-events: none;
 }
 
 .dst-div {

@@ -214,3 +214,12 @@ export const lastSlotOfTheDayAndOcupied = (slotStart, e) => {
   }
   return false
 }
+
+export const ifSlotSelected = (slotStart, selectedWindow) => {
+  return (
+    !isEmpty(selectedWindow) &&
+    (isSameMinute(slotStart, selectedWindow.start) ||
+      (isAfter(slotStart, selectedWindow.start) &&
+        isBefore(slotStart, selectedWindow.end)))
+  )
+}
