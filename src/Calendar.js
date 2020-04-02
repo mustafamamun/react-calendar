@@ -6,7 +6,7 @@ import Views from './components/views/IndexView'
 import { useInterval } from 'react-use'
 
 import 'semantic-ui-css/semantic.min.css'
-import './index.css'
+import './style/styles.css'
 
 function Calendar({
   events = [
@@ -22,10 +22,10 @@ function Calendar({
     //     'This is a event on mac sdsdfg asdfasasdf  asdfsa asfa asdfa asdfasdf'
     // },
     {
-      start: new Date('2020-04-01T11:50:00+03:00'),
-      end: new Date('2020-04-03T20:30:00+03:00'),
+      start: new Date('2020-04-05T11:50:00+03:00'),
+      end: new Date('2020-04-06T20:30:00+03:00'),
       title:
-        'This is a event on mac sdsdfg asdfas asdfsa asdfasfa asdfa asdfasdf'
+        'This is a event on mac That i am testing my app with. The app is written on a linux machine'
     }
   ]
 }) {
@@ -43,7 +43,7 @@ function Calendar({
   }, 5 * 60 * 1000)
 
   return (
-    <Context defaultView={'month'}>
+    <Context defaultView={'week'}>
       <Container className='mt-5'>
         <Nav onNavigation={onNavigation} onViewChange={onViewChange} />
         <Views
@@ -51,6 +51,8 @@ function Calendar({
           events={events}
           onSelect={onSelect}
           onClickedEvent={onClickedEvent}
+          disabledDays={['Fri', 'Sat']}
+          disabledHours={[19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6]}
         />
       </Container>
     </Context>

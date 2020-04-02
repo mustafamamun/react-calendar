@@ -16,7 +16,9 @@ import {
   getEventTime,
   getHight,
   lastSlotOfTheDayAndOcupied,
-  ifSlotSelected
+  ifSlotSelected,
+  ifSlotIsInDisabledTime,
+  colors
 } from '../utils'
 import { Popup } from 'semantic-ui-react'
 
@@ -29,6 +31,8 @@ const HalfAnHourSlot = ({
   highestIndex,
   onMouseOver,
   id,
+  disabledDays,
+  disabledHours,
   ...rest
 }) => {
   const currentTiemBarStyle = {
@@ -44,7 +48,7 @@ const HalfAnHourSlot = ({
     zIndex: 10000
   }
   const eventStyle = e => {
-    return {
+    const base = {
       width: `${(100 - 10) / highestIndex}%`,
       position: 'absolute',
       left: `${((100 - 10) / highestIndex) * e.calprops.position}%`,
@@ -52,6 +56,9 @@ const HalfAnHourSlot = ({
       marginTop: `${getMarginTop(e, slotStart)}px`,
       height: `${getHeight(e, slotStart)}px`
     }
+    return ifSlotIsInDisabledTime(disabledDays, disabledHours, slotStart)
+      ? { ...base, backgroundColor: colors.warning, border: 0 }
+      : base
   }
   const getMarginTop = (e, slotStart) => {
     return isEventStartOnSlot(e, slotStart) &&
@@ -135,14 +142,16 @@ const HalfAnHourSlot = ({
   return (
     <div {...rest} onMouseOver={onMouseOver} id={id}>
       {ifSlotSelected(slotStart, selectedWindow) &&
-        isSameMinute(selectedWindow.end, addMinutes(slotStart, 29)) && (
+        isSameMinute(selectedWindow.end, addMinutes(slotStart, 29)) &&
+        !ifSlotIsInDisabledTime(disabledDays, disabledHours, slotStart) && (
           <div className={'show-selection'}>
             <div>{format(selectedWindow.start, 'dd-MM-yy, HH:mm')} -</div>
             <div>{format(selectedWindow.end, 'dd-MM-yy, HH:mm')}</div>
           </div>
         )}
       {ifSlotSelected(slotStart, selectedWindow) &&
-        !isSameMinute(selectedWindow.end, addMinutes(slotStart, 29)) && (
+        !isSameMinute(selectedWindow.end, addMinutes(slotStart, 29)) &&
+        !ifSlotIsInDisabledTime(disabledDays, disabledHours, slotStart) && (
           <div className={'show-selection'}></div>
         )}
       {isWithinInterval(currentTime, {

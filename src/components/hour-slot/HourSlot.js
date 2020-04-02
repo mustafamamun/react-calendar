@@ -1,12 +1,7 @@
 import React from 'react'
-import {
-  addHours,
-  startOfMinute,
-  addMinutes,
-  isAfter,
-  subHours
-} from 'date-fns'
+import { addHours, startOfMinute, addMinutes, subHours } from 'date-fns'
 import HalfAnHourSlot from './HalfAnHourSlot'
+import { isSlotDisabled } from '../utils'
 
 const HourSlot = ({
   day,
@@ -18,7 +13,9 @@ const HourSlot = ({
   onMouseUp,
   events,
   onClickEvent,
-  highestIndex
+  highestIndex,
+  disabledDays,
+  disabledHours
 }) => {
   const startTZO = day.getTimezoneOffset()
   const endDate = addHours(day, hour)
@@ -42,7 +39,14 @@ const HourSlot = ({
     <div>
       <HalfAnHourSlot
         className={`first-half-an-hour ${
-          isAfter(currentTime, firstSlotStartHour) ? 'disable' : ''
+          isSlotDisabled(
+            firstSlotStartHour,
+            currentTime,
+            disabledDays,
+            disabledHours
+          )
+            ? 'disable'
+            : ''
         }`}
         id={firstSlotStartHour.toString()}
         onMouseDown={onMouseClick}
@@ -54,10 +58,19 @@ const HourSlot = ({
         onClickEvent={onClickEvent}
         events={events}
         highestIndex={highestIndex}
+        disabledDays={disabledDays}
+        disabledHours={disabledHours}
       />
       <HalfAnHourSlot
         className={`last-half-an-hour ${
-          isAfter(currentTime, secondSlotStartHour) ? 'disable' : ''
+          isSlotDisabled(
+            secondSlotStartHour,
+            currentTime,
+            disabledDays,
+            disabledHours
+          )
+            ? 'disable'
+            : ''
         }`}
         id={secondSlotStartHour.toString()}
         onMouseDown={onMouseClick}
@@ -69,6 +82,8 @@ const HourSlot = ({
         events={events}
         onClickEvent={onClickEvent}
         highestIndex={highestIndex}
+        disabledDays={disabledDays}
+        disabledHours={disabledHours}
       />
     </div>
   )

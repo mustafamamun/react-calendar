@@ -13,7 +13,14 @@ import {
 import { addMinutes, isBefore, isSameDay, endOfMinute, isValid } from 'date-fns'
 import { isEmpty, sortBy } from 'lodash'
 
-const Day = ({ currentTime, events, onSelect, onClickedEvent }) => {
+const Day = ({
+  currentTime,
+  events,
+  onSelect,
+  onClickedEvent,
+  disabledDays = [],
+  disabledHours = []
+}) => {
   const { viewWindow } = useContext(CalContext)
   const [selectedWindow, setSelectedWindow] = useState({})
   const onMouseClick = e => {
@@ -96,6 +103,8 @@ const Day = ({ currentTime, events, onSelect, onClickedEvent }) => {
             events={eventWithIndex}
             onClickEvent={onClickEvent}
             highestIndex={highestIndex}
+            disabledDays={disabledDays}
+            disabledHours={disabledHours}
           />
         </GridColumn>
       </GridRow>

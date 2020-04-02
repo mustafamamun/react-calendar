@@ -11,9 +11,12 @@ import {
   getMinutes,
   endOfMinute,
   differenceInMinutes,
-  isSameHour
+  isSameHour,
+  getDay,
+  endOfWeek,
+  getDate
 } from 'date-fns'
-import { isEmpty } from 'lodash'
+import { isEmpty, includes } from 'lodash'
 
 export const daysInWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
@@ -69,6 +72,9 @@ export const timeSlots = [
   '23:00'
 ]
 
+export const colors = {
+  warning: '#f07810'
+}
 export const getEventsOfTheDay = (day, events) => {
   return events.filter(e => {
     return (
@@ -221,5 +227,49 @@ export const ifSlotSelected = (slotStart, selectedWindow) => {
     (isSameMinute(slotStart, selectedWindow.start) ||
       (isAfter(slotStart, selectedWindow.start) &&
         isBefore(slotStart, selectedWindow.end)))
+  )
+}
+
+export const ifDayIsInDisabledArray = (disabledDays, day) => {
+  return includes(disabledDays, daysInWeek[getDay(day)])
+}
+
+export const isDayDisabled = (day, disabledDays, currentTime) => {
+  return (
+    isBefore(day, startOfDay(currentTime)) ||
+    ifDayIsInDisabledArray(disabledDays, day)
+  )
+}
+
+export const ifSlotIsInDisabledTime = (
+  disabledDays,
+  disabledHours,
+  slotStart
+) => {
+  return (
+    includes(disabledDays, daysInWeek[getDay(slotStart)]) ||
+    includes(disabledHours, getHours(slotStart))
+  )
+}
+
+export const isSlotDisabled = (
+  slotStart,
+  currentTime,
+  disabledDays,
+  disabledHours
+) => {
+  return (
+    isAfter(currentTime, slotStart) ||
+    ifSlotIsInDisabledTime(disabledDays, disabledHours, slotStart)
+  )
+}
+
+export const getEventWidth = (day, e, dayWidth) => {
+  return (
+    (dayWidth - 10) *
+      (isBefore(endOfWeek(day), e.end)
+        ? getDate(endOfWeek(day)) - getDate(day) + 1
+        : getDate(e.end) - getDate(day) + 1) -
+    10
   )
 }
