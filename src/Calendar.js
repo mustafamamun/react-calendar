@@ -23,7 +23,7 @@ function Calendar({
     // },
     {
       start: new Date('2020-04-01T11:50:00+03:00'),
-      end: new Date('2020-04-01T20:30:00+03:00'),
+      end: new Date('2020-04-03T20:30:00+03:00'),
       title:
         'This is a event on mac sdsdfg asdfas asdfsa asdfasfa asdfa asdfasdf'
     }
@@ -43,7 +43,7 @@ function Calendar({
   }, 5 * 60 * 1000)
 
   return (
-    <Context defaultView={'week'}>
+    <Context defaultView={'month'}>
       <Container className='mt-5'>
         <Nav onNavigation={onNavigation} onViewChange={onViewChange} />
         <Views

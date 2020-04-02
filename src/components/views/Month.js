@@ -11,9 +11,10 @@ import {
   startOfMonth,
   startOfWeek,
   endOfWeek,
-  isValid
+  isValid,
+  format
 } from 'date-fns'
-import { Grid, GridColumn, GridRow } from 'semantic-ui-react'
+import { Grid, GridColumn, GridRow, Popup } from 'semantic-ui-react'
 import { getDate } from 'date-fns/esm'
 import { isEmpty, sortBy, slice, flow, get, omit } from 'lodash'
 
@@ -184,14 +185,28 @@ const Month = ({ currentTime, events, onSelect, onClickedEvent }) => {
                         )) ||
                       (isSameDay(day, startOfWeek(day)) &&
                         isBefore(e.start, startOfWeek(day)))) && (
-                      <div
-                        className={'event-title-month'}
-                        style={{
-                          width: `${eventWidth(day, e)}px`
-                        }}
-                      >
-                        {e.title}
-                      </div>
+                      <Popup
+                        disabled={!isEmpty(selectedWindow)}
+                        className='popup-box'
+                        content={e.title}
+                        key={`${
+                          e.title
+                        }-${e.start.toString()}-${e.end.toString()}`}
+                        header={`${format(
+                          e.start,
+                          'dd/MM/yy HH:mm'
+                        )} - ${format(e.end, 'dd/MM/yy HH:mm')}`}
+                        trigger={
+                          <div
+                            className={'event-title-month'}
+                            style={{
+                              width: `${eventWidth(day, e)}px`
+                            }}
+                          >
+                            {e.title}
+                          </div>
+                        }
+                      />
                     )}
                   </div>
                 )

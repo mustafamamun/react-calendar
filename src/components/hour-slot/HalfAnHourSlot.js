@@ -9,7 +9,7 @@ import {
   startOfDay,
   differenceInMinutes
 } from 'date-fns'
-import { omit } from 'lodash'
+import { omit, isEmpty } from 'lodash'
 
 import {
   getEventOfTheSlot,
@@ -18,6 +18,7 @@ import {
   lastSlotOfTheDayAndOcupied,
   ifSlotSelected
 } from '../utils'
+import { Popup } from 'semantic-ui-react'
 
 const HalfAnHourSlot = ({
   currentTime,
@@ -40,7 +41,7 @@ const HalfAnHourSlot = ({
     padding: 0,
     width: '100%',
     top: `${Math.floor(((getMinutes(currentTime) % 30) / 30) * 24)}px`,
-    zIndex: 100000000000000
+    zIndex: 10000
   }
   const eventStyle = e => {
     return {
@@ -101,6 +102,36 @@ const HalfAnHourSlot = ({
     )
   }
 
+  const event = (e, i) => {
+    return (
+      <div
+        onMouseOver={() => onMouseOver({ target: { id } })}
+        key={`${e.start}${slotStart}${e.title}${i}`}
+        style={eventStyle(e)}
+        className={`evnet-basic-slot ${
+          isEventStartOnSlot(e, slotStart) ? 'event-start-slot' : ''
+        } ${isEventEndOnSlot(e, slotStart) ? 'event-end-slot' : ''}`}
+        onMouseDown={event => {
+          event.stopPropagation()
+          onClickEvent(omit(e, 'calprops'))
+        }}
+      >
+        {' '}
+        {(isEventStartOnSlot(e, slotStart) ||
+          isSameMinute(startOfDay(slotStart), slotStart)) && (
+          <div
+            className={'title-box-day-wk'}
+            style={{
+              height: `${getHight(e.start, e.end, slotStart)}px`
+            }}
+          >
+            {getEventTime(e, slotStart)},{e.title}
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div {...rest} onMouseOver={onMouseOver} id={id}>
       {ifSlotSelected(slotStart, selectedWindow) &&
@@ -124,31 +155,17 @@ const HalfAnHourSlot = ({
       )}
       {eventsOfTheSlot.map((e, i) => {
         return (
-          <div
-            onMouseOver={() => onMouseOver({ target: { id } })}
-            key={`${e.start}${slotStart}${e.title}${i}`}
-            style={eventStyle(e)}
-            className={`evnet-basic-slot ${
-              isEventStartOnSlot(e, slotStart) ? 'event-start-slot' : ''
-            } ${isEventEndOnSlot(e, slotStart) ? 'event-end-slot' : ''}`}
-            onMouseDown={event => {
-              event.stopPropagation()
-              onClickEvent(omit(e, 'calprops'))
-            }}
-          >
-            {' '}
-            {(isEventStartOnSlot(e, slotStart) ||
-              isSameMinute(startOfDay(slotStart), slotStart)) && (
-              <div
-                className={'title-box-day-wk'}
-                style={{
-                  height: `${getHight(e.start, e.end, slotStart)}px`
-                }}
-              >
-                {getEventTime(e, slotStart)},{e.title}
-              </div>
-            )}
-          </div>
+          <Popup
+            disabled={!isEmpty(selectedWindow)}
+            className='popup-box'
+            content={e.title}
+            key={`${e.title}-${e.start.toString()}-${e.end.toString()}`}
+            header={`${format(e.start, 'dd/MM/yy HH:mm')} - ${format(
+              e.end,
+              'dd/MM/yy HH:mm'
+            )}`}
+            trigger={event(e, i)}
+          />
         )
       })}
     </div>

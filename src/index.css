@@ -264,7 +264,7 @@
 
 .event-title-month {
   position: absolute;
-  z-index: 10000;
+  z-index: 100;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -273,7 +273,7 @@
 }
 .title-box-day-wk {
   position: absolute;
-  z-index: 10000;
+  z-index: 1000000000000;
   word-break: break-all;
   line-height: normal;
   overflow: hidden;
@@ -287,4 +287,9 @@
   height: 50px;
   padding-top: 15px;
   text-align: center;
+}
+
+.popup-box {
+  background: white !important;
+  z-index: 1000 !important;
 }
