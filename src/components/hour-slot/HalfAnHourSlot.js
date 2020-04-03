@@ -5,8 +5,6 @@ import {
   format,
   isWithinInterval,
   addMinutes,
-  isSameSecond,
-  startOfDay,
   differenceInMinutes
 } from 'date-fns'
 import { omit, isEmpty } from 'lodash'
@@ -14,11 +12,13 @@ import { omit, isEmpty } from 'lodash'
 import {
   getEventOfTheSlot,
   getEventTime,
-  getHight,
+  getHightEventDetails,
   lastSlotOfTheDayAndOcupied,
   ifSlotSelected,
   ifSlotIsInDisabledTime,
-  colors
+  showEventData,
+  isEventStartOnSlot,
+  isEventEndOnSlot
 } from '../utils'
 import { Popup } from 'semantic-ui-react'
 
@@ -48,7 +48,7 @@ const HalfAnHourSlot = ({
     zIndex: 10000
   }
   const eventStyle = e => {
-    const base = {
+    return {
       width: `${(100 - 10) / highestIndex}%`,
       position: 'absolute',
       left: `${((100 - 10) / highestIndex) * e.calprops.position}%`,
@@ -56,9 +56,6 @@ const HalfAnHourSlot = ({
       marginTop: `${getMarginTop(e, slotStart)}px`,
       height: `${getHeight(e, slotStart)}px`
     }
-    return ifSlotIsInDisabledTime(disabledDays, disabledHours, slotStart)
-      ? { ...base, backgroundColor: colors.warning, border: 0 }
-      : base
   }
   const getMarginTop = (e, slotStart) => {
     return isEventStartOnSlot(e, slotStart) &&
@@ -90,24 +87,6 @@ const HalfAnHourSlot = ({
     }
   }
   const eventsOfTheSlot = getEventOfTheSlot(slotStart, events)
-  const isEventStartOnSlot = (e, slotStart) => {
-    return (
-      isSameSecond(slotStart, e.start) ||
-      isWithinInterval(e.start, {
-        start: slotStart,
-        end: addMinutes(slotStart, 30)
-      })
-    )
-  }
-  const isEventEndOnSlot = (e, slotStart) => {
-    return (
-      isSameSecond(addMinutes(slotStart, 30), e.end) ||
-      isWithinInterval(e.end, {
-        start: slotStart,
-        end: addMinutes(slotStart, 30)
-      })
-    )
-  }
 
   const event = (e, i) => {
     return (
@@ -124,21 +103,25 @@ const HalfAnHourSlot = ({
         }}
       >
         {' '}
-        {(isEventStartOnSlot(e, slotStart) ||
-          isSameMinute(startOfDay(slotStart), slotStart)) && (
+        {showEventData(e, slotStart, disabledHours) && (
           <div
             className={'title-box-day-wk'}
             style={{
-              height: `${getHight(e.start, e.end, slotStart)}px`
+              height: `${getHightEventDetails(
+                e.start,
+                e.end,
+                slotStart,
+                disabledHours
+              )}px`,
+              padding: '3%'
             }}
           >
-            {getEventTime(e, slotStart)},{e.title}
+            {getEventTime(e, slotStart, disabledHours)},{e.title}
           </div>
         )}
       </div>
     )
   }
-
   return (
     <div {...rest} onMouseOver={onMouseOver} id={id}>
       {ifSlotSelected(slotStart, selectedWindow) &&
@@ -162,21 +145,27 @@ const HalfAnHourSlot = ({
       ) : (
         ''
       )}
-      {eventsOfTheSlot.map((e, i) => {
-        return (
-          <Popup
-            disabled={!isEmpty(selectedWindow)}
-            className='popup-box'
-            content={e.title}
-            key={`${e.title}-${e.start.toString()}-${e.end.toString()}`}
-            header={`${format(e.start, 'dd/MM/yy HH:mm')} - ${format(
-              e.end,
-              'dd/MM/yy HH:mm'
-            )}`}
-            trigger={event(e, i)}
-          />
-        )
-      })}
+
+      {!ifSlotIsInDisabledTime(disabledDays, disabledHours, slotStart) && (
+        <div>
+          {eventsOfTheSlot.map((e, i) => {
+            return (
+              <Popup
+                position={'top left'}
+                disabled={!isEmpty(selectedWindow)}
+                className='popup-box'
+                content={e.title}
+                key={`${e.title}-${e.start.toString()}-${e.end.toString()}`}
+                header={`${format(e.start, 'dd/MM/yy HH:mm')} - ${format(
+                  e.end,
+                  'dd/MM/yy HH:mm'
+                )}`}
+                trigger={event(e, i)}
+              />
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

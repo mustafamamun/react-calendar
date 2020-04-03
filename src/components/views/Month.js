@@ -6,17 +6,13 @@ import {
   isSameMinute,
   isAfter,
   isSameDay,
-  isWithinInterval,
   endOfDay,
-  startOfMonth,
-  startOfWeek,
   isValid,
-  format,
-  getDay
+  format
 } from 'date-fns'
 import { Grid, GridColumn, GridRow, Popup } from 'semantic-ui-react'
 import { getDate } from 'date-fns/esm'
-import { isEmpty, sortBy, slice, flow, get, omit, includes } from 'lodash'
+import { isEmpty, sortBy, slice, get, omit } from 'lodash'
 
 import WeekRow from '../week-row/WeekRow'
 import { CalContext } from '../../context/Context'
@@ -24,8 +20,10 @@ import {
   getEventsOfTheDay,
   isDayDisabled,
   getEventWidth,
-  daysInWeek,
-  colors
+  showEvent,
+  isEventStartOnDay,
+  isEventEndOnDay,
+  ifDayIsInDisabledArray
 } from '../utils'
 
 const Month = ({
@@ -113,24 +111,7 @@ const Month = ({
     )
   }
   const sortedEvents = sortBy(events, 'start')
-  const isEventStartOnDay = (e, day) => {
-    return (
-      isSameMinute(startOfDay(day), e.start) ||
-      isWithinInterval(e.start, {
-        start: startOfDay(day),
-        end: endOfDay(day)
-      })
-    )
-  }
-  const isEventEndOnDay = (e, day) => {
-    return (
-      isSameMinute(endOfDay(day), e.end) ||
-      isWithinInterval(e.end, {
-        start: startOfDay(day),
-        end: endOfDay(day)
-      })
-    )
-  }
+
   const onMoreClicked = day => {
     setViewWindow({ start: startOfDay(day), end: endOfDay(day) })
     setView('day')
@@ -170,57 +151,54 @@ const Month = ({
               onMouseUp={onMouseUp}
             >
               <b>{date < 10 ? `0${date}` : date}</b>
-              {firstTwoEvents.map(e => {
-                return (
-                  <div
-                    onMouseDown={event => {
-                      event.stopPropagation()
-                      onEventClicked(omit(e, 'calprops'))
-                    }}
-                    className={`evt-base ${
-                      isEventStartOnDay(e, day) ? 'event-start' : ''
-                    } ${isEventEndOnDay(e, day) ? 'event-end' : ''}`}
-                    style={
-                      includes(disabledDays, daysInWeek[getDay(day)])
-                        ? { backgroundColor: colors.warning }
-                        : {}
-                    }
-                    key={e.title}
-                  >
-                    {(isEventStartOnDay(e, day) ||
-                      (isSameDay(day, flow(startOfMonth, startOfWeek)(day)) &&
-                        isBefore(
-                          e.start,
-                          flow(startOfMonth, startOfWeek)(day)
-                        )) ||
-                      (isSameDay(day, startOfWeek(day)) &&
-                        isBefore(e.start, startOfWeek(day)))) && (
-                      <Popup
-                        disabled={!isEmpty(selectedWindow)}
-                        className='popup-box'
-                        content={e.title}
-                        key={`${
-                          e.title
-                        }-${e.start.toString()}-${e.end.toString()}`}
-                        header={`${format(
-                          e.start,
-                          'dd/MM/yy HH:mm'
-                        )} - ${format(e.end, 'dd/MM/yy HH:mm')}`}
-                        trigger={
-                          <div
-                            className={'event-title-month'}
-                            style={{
-                              width: `${getEventWidth(day, e, dayWidth)}px`
-                            }}
-                          >
-                            {e.title}
-                          </div>
-                        }
-                      />
-                    )}
-                  </div>
-                )
-              })}
+              {!ifDayIsInDisabledArray(disabledDays, day) && (
+                <div>
+                  {firstTwoEvents.map(e => {
+                    return (
+                      <div
+                        onMouseDown={event => {
+                          event.stopPropagation()
+                          onEventClicked(omit(e, 'calprops'))
+                        }}
+                        className={`evt-base ${
+                          isEventStartOnDay(e, day) ? 'event-start' : ''
+                        } ${isEventEndOnDay(e, day) ? 'event-end' : ''}`}
+                        key={e.title}
+                      >
+                        {showEvent(e, day, disabledDays) && (
+                          <Popup
+                            disabled={!isEmpty(selectedWindow)}
+                            className='popup-box'
+                            content={e.title}
+                            key={`${
+                              e.title
+                            }-${e.start.toString()}-${e.end.toString()}`}
+                            header={`${format(
+                              e.start,
+                              'dd/MM/yy HH:mm'
+                            )} - ${format(e.end, 'dd/MM/yy HH:mm')}`}
+                            trigger={
+                              <div
+                                className={'event-title-month'}
+                                style={{
+                                  width: `${getEventWidth(
+                                    day,
+                                    e,
+                                    dayWidth,
+                                    disabledDays
+                                  )}px`
+                                }}
+                              >
+                                {e.title}
+                              </div>
+                            }
+                          />
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
               {eventsOfTheDay.length > 2 && (
                 <div
                   className={'more-events-link'}

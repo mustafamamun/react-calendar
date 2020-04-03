@@ -122,7 +122,7 @@
   font-weight: bold;
   position: absolute;
   width: 100%;
-  z-index: 1000000000000000;
+  z-index: 1000;
   background-color: red;
   height: 100%;
   pointer-events: none;
@@ -273,7 +273,7 @@
 }
 .title-box-day-wk {
   position: absolute;
-  z-index: 1000000000000;
+  z-index: 100;
   word-break: break-all;
   line-height: normal;
   overflow: hidden;
@@ -291,5 +291,5 @@
 
 .popup-box {
   background: white !important;
-  z-index: 1000 !important;
+  z-index: 10000 !important;
 }

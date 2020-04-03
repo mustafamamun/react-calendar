@@ -14,9 +14,14 @@ import {
   isSameHour,
   getDay,
   endOfWeek,
-  getDate
+  getDate,
+  isSameDay,
+  startOfMonth,
+  startOfWeek,
+  subDays,
+  subMinutes
 } from 'date-fns'
-import { isEmpty, includes } from 'lodash'
+import { isEmpty, includes, flow, indexOf, compact, orderBy } from 'lodash'
 
 export const daysInWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
@@ -177,33 +182,62 @@ export const addLeadingZero = value => {
   return value >= 10 ? value : `0${value}`
 }
 
-export const getEventTime = (e, slotStart) => {
-  const start = isBefore(e.start, startOfDay(slotStart))
-    ? `${addLeadingZero(getHours(startOfDay(slotStart)))} : ${addLeadingZero(
-        getMinutes(startOfDay(slotStart))
+export const getEventEndTimeForDay = (e, slotStart, disabledHours) => {
+  let disableHour
+  let dayEnd
+  let eventEnd
+  const nextDisableHour = orderBy(disabledHours, ['asc']).filter(
+    i => i > getHours(slotStart)
+  )[0]
+  if (nextDisableHour) {
+    disableHour = `${addLeadingZero(nextDisableHour)} : 00`
+  }
+  if (isAfter(e.end, endOfDay(slotStart))) {
+    dayEnd = `${addLeadingZero(
+      getHours(endOfDay(slotStart))
+    )} : ${addLeadingZero(getMinutes(endOfDay(slotStart)))}`
+  } else {
+    eventEnd = `${addLeadingZero(getHours(e.end))} : ${addLeadingZero(
+      getMinutes(e.end)
+    )}`
+  }
+
+  return compact([disableHour, dayEnd, eventEnd]).sort()[0]
+}
+
+export const getEventTime = (e, slotStart, disabledHours) => {
+  const start = isBefore(e.start, slotStart)
+    ? `${addLeadingZero(getHours(slotStart))} : ${addLeadingZero(
+        getMinutes(slotStart)
       )}`
     : `${addLeadingZero(getHours(e.start))} : ${addLeadingZero(
         getMinutes(e.start)
       )}`
-
-  const end = isAfter(e.end, endOfDay(slotStart))
-    ? `${addLeadingZero(getHours(endOfDay(slotStart)))} : ${addLeadingZero(
-        getMinutes(endOfDay(slotStart))
-      )}`
-    : `${addLeadingZero(getHours(e.end))} : ${addLeadingZero(
-        getMinutes(e.end)
-      )}`
-  return `${start} - ${end}`
+  return `${start} - ${getEventEndTimeForDay(e, slotStart, disabledHours)}`
 }
 
-export const getHight = (start, end, slotStart) => {
+export const getHightEventDetails = (start, end, slotStart, disabledHours) => {
+  let diffToDisableHour
   const startTime = isBefore(start, slotStart) ? slotStart : start
-  const endTime = isAfter(end, endOfDay(slotStart)) ? endOfDay(slotStart) : end
-  const diff = differenceInMinutes(endTime, startTime)
+  const nextDisableHour = orderBy(disabledHours, ['asc']).filter(
+    i => i > getHours(slotStart)
+  )[0]
+  if (nextDisableHour) {
+    diffToDisableHour =
+      (nextDisableHour - getHours(startTime)) * 60 - getMinutes(startTime)
+  }
+  const diffToEndofTheDay = differenceInMinutes(endOfDay(slotStart), startTime)
+  const diffToEventEnd = differenceInMinutes(end, startTime)
+
+  const diff = orderBy(
+    compact([diffToDisableHour, diffToEndofTheDay, diffToEventEnd]),
+    ['asc']
+  )[0]
+
   if (isSameHour(start, end)) {
-    return diff > 15 ? (diff * 24) / 30 : 24
+    return diff > 15 ? (diff * 24.5) / 30 : 24
   } else {
-    return diff > 15 ? (diff < 1440 ? (diff * 24) / 30 : (1440 * 24) / 30) : 50
+    return diff > 15 ? (diff * 24.5) / 30 : 50
   }
 }
 
@@ -264,12 +298,107 @@ export const isSlotDisabled = (
   )
 }
 
-export const getEventWidth = (day, e, dayWidth) => {
+export const isEventStartOnDay = (e, day) => {
   return (
-    (dayWidth - 10) *
-      (isBefore(endOfWeek(day), e.end)
-        ? getDate(endOfWeek(day)) - getDate(day) + 1
-        : getDate(e.end) - getDate(day) + 1) -
-    10
+    isSameMinute(startOfDay(day), e.start) ||
+    isWithinInterval(e.start, {
+      start: startOfDay(day),
+      end: endOfDay(day)
+    })
+  )
+}
+
+export const isEventEndOnDay = (e, day) => {
+  return (
+    isSameMinute(endOfDay(day), e.end) ||
+    isWithinInterval(e.end, {
+      start: startOfDay(day),
+      end: endOfDay(day)
+    })
+  )
+}
+export const isFirstActiveDay = (day, disabledDays) => {
+  return (
+    !includes(disabledDays, daysInWeek[getDay(day)]) &&
+    includes(disabledDays, daysInWeek[getDay(subDays(day, 1))])
+  )
+}
+export const showEvent = (e, day, disabledDays) => {
+  return (
+    (isEventStartOnDay(e, day) ||
+      (isSameDay(day, flow(startOfMonth, startOfWeek)(day)) &&
+        isBefore(e.start, flow(startOfMonth, startOfWeek)(day))) ||
+      (isSameDay(day, startOfWeek(day)) &&
+        isBefore(e.start, startOfWeek(day))) ||
+      isFirstActiveDay(day, disabledDays)) &&
+    !includes(disabledDays, daysInWeek[getDay(day)])
+  )
+}
+
+export const findDistanceToNextDisableDay = (day, disabledDays) => {
+  if (isEmpty(disabledDays)) {
+    return null
+  }
+  const sortedDisabledDaysIndex = disabledDays
+    .map(i => indexOf(daysInWeek, i))
+    .sort()
+  const nextDisableDays = sortedDisabledDaysIndex.filter(i => i > getDay(day))
+  if (isEmpty(nextDisableDays)) {
+    return null
+  }
+  return nextDisableDays[0] - getDay(day)
+}
+
+export const findDistanceToEndofWeek = day => {
+  return getDay(endOfWeek(day)) - getDay(day) + 1
+}
+
+export const findDistanceToEndofEvent = (e, day) => {
+  return getDate(e.end) - getDate(day) + 1
+}
+
+export const getEventWidth = (day, e, dayWidth, disabledDays) => {
+  const distance = orderBy(
+    compact([
+      findDistanceToNextDisableDay(day, disabledDays),
+      findDistanceToEndofWeek(day),
+      findDistanceToEndofEvent(e, day)
+    ]),
+    ['asc']
+  )[0]
+  return (dayWidth - 10) * distance
+}
+
+export const showEventData = (e, slotStart, disabledHours) => {
+  return (
+    isEventStartOnSlot(e, slotStart) ||
+    isSameMinute(startOfDay(slotStart), slotStart) ||
+    ifFirstActiveSlot(slotStart, disabledHours)
+  )
+}
+
+export const ifFirstActiveSlot = (slotStart, disabledHours) => {
+  return (
+    !includes(disabledHours, getHours(slotStart)) &&
+    includes(disabledHours, getHours(subMinutes(slotStart, 1)))
+  )
+}
+
+export const isEventStartOnSlot = (e, slotStart) => {
+  return (
+    isSameSecond(slotStart, e.start) ||
+    isWithinInterval(e.start, {
+      start: slotStart,
+      end: addMinutes(slotStart, 30)
+    })
+  )
+}
+export const isEventEndOnSlot = (e, slotStart) => {
+  return (
+    isSameSecond(addMinutes(slotStart, 30), e.end) ||
+    isWithinInterval(e.end, {
+      start: slotStart,
+      end: addMinutes(slotStart, 30)
+    })
   )
 }

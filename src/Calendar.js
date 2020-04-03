@@ -22,10 +22,16 @@ function Calendar({
     //     'This is a event on mac sdsdfg asdfasasdf  asdfsa asfa asdfa asdfasdf'
     // },
     {
-      start: new Date('2020-04-05T11:50:00+03:00'),
-      end: new Date('2020-04-06T20:30:00+03:00'),
+      start: new Date('2020-04-06T11:50:00+03:00'),
+      end: new Date('2020-04-06T17:30:00+03:00'),
       title:
-        'This is a event on mac That i am testing my app with. The app is written on a linux machine'
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum"
+    },
+    {
+      start: new Date('2020-04-06T11:50:00+03:00'),
+      end: new Date('2020-04-07T17:30:00+03:00'),
+      title:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum"
     }
   ]
 }) {
@@ -51,8 +57,8 @@ function Calendar({
           events={events}
           onSelect={onSelect}
           onClickedEvent={onClickedEvent}
-          disabledDays={['Fri', 'Sat']}
-          disabledHours={[19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6]}
+          disabledDays={['Sun']}
+          disabledHours={[0, 1, 2, 3, 4, 5, 6, 7, 18, 19, 20, 21, 22, 23]}
         />
       </Container>
     </Context>
