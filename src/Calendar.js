@@ -49,7 +49,7 @@ function Calendar({
   }, 5 * 60 * 1000)
 
   return (
-    <Context defaultView={'week'}>
+    <Context defaultView={'month'}>
       <Container className='mt-5'>
         <Nav onNavigation={onNavigation} onViewChange={onViewChange} />
         <Views

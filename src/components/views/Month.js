@@ -153,7 +153,7 @@ const Month = ({
               <b>{date < 10 ? `0${date}` : date}</b>
               {!ifDayIsInDisabledArray(disabledDays, day) && (
                 <div>
-                  {firstTwoEvents.map(e => {
+                  {firstTwoEvents.map((e, i) => {
                     return (
                       <div
                         onMouseDown={event => {
@@ -163,7 +163,7 @@ const Month = ({
                         className={`evt-base ${
                           isEventStartOnDay(e, day) ? 'event-start' : ''
                         } ${isEventEndOnDay(e, day) ? 'event-end' : ''}`}
-                        key={e.title}
+                        key={`${e.title + i}`}
                       >
                         {showEvent(e, day, disabledDays) && (
                           <Popup

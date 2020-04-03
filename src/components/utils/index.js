@@ -21,7 +21,7 @@ import {
   subDays,
   subMinutes
 } from 'date-fns'
-import { isEmpty, includes, flow, indexOf, compact, orderBy } from 'lodash'
+import { isEmpty, includes, flow, indexOf, compact, sortBy } from 'lodash'
 
 export const daysInWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
@@ -186,7 +186,7 @@ export const getEventEndTimeForDay = (e, slotStart, disabledHours) => {
   let disableHour
   let dayEnd
   let eventEnd
-  const nextDisableHour = orderBy(disabledHours, ['asc']).filter(
+  const nextDisableHour = sortBy(disabledHours).filter(
     i => i > getHours(slotStart)
   )[0]
   if (nextDisableHour) {
@@ -219,7 +219,7 @@ export const getEventTime = (e, slotStart, disabledHours) => {
 export const getHightEventDetails = (start, end, slotStart, disabledHours) => {
   let diffToDisableHour
   const startTime = isBefore(start, slotStart) ? slotStart : start
-  const nextDisableHour = orderBy(disabledHours, ['asc']).filter(
+  const nextDisableHour = sortBy(disabledHours).filter(
     i => i > getHours(slotStart)
   )[0]
   if (nextDisableHour) {
@@ -229,9 +229,8 @@ export const getHightEventDetails = (start, end, slotStart, disabledHours) => {
   const diffToEndofTheDay = differenceInMinutes(endOfDay(slotStart), startTime)
   const diffToEventEnd = differenceInMinutes(end, startTime)
 
-  const diff = orderBy(
-    compact([diffToDisableHour, diffToEndofTheDay, diffToEventEnd]),
-    ['asc']
+  const diff = sortBy(
+    compact([diffToDisableHour, diffToEndofTheDay, diffToEventEnd])
   )[0]
 
   if (isSameHour(start, end)) {
@@ -358,15 +357,14 @@ export const findDistanceToEndofEvent = (e, day) => {
 }
 
 export const getEventWidth = (day, e, dayWidth, disabledDays) => {
-  const distance = orderBy(
+  const distance = sortBy(
     compact([
       findDistanceToNextDisableDay(day, disabledDays),
       findDistanceToEndofWeek(day),
       findDistanceToEndofEvent(e, day)
-    ]),
-    ['asc']
+    ])
   )[0]
-  return (dayWidth - 10) * distance
+  return (dayWidth - 20) * distance
 }
 
 export const showEventData = (e, slotStart, disabledHours) => {
