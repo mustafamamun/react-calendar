@@ -294,8 +294,3 @@
   padding-top: 15px;
   text-align: center;
 }
-
-.popup-box {
-  background: white !important;
-  z-index: 10000 !important;
-}

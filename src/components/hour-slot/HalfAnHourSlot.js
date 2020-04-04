@@ -20,7 +20,7 @@ import {
   isEventStartOnSlot,
   isEventEndOnSlot
 } from '../utils'
-import { Popup } from 'semantic-ui-react'
+import ReactTooltip from 'react-tooltip'
 
 const HalfAnHourSlot = ({
   currentTime,
@@ -89,42 +89,6 @@ const HalfAnHourSlot = ({
     }
   }
   const eventsOfTheSlot = getEventOfTheSlot(slotStart, events)
-
-  const event = (e, i) => {
-    return (
-      <div
-        onMouseOver={() => onMouseOver({ target: { id } })}
-        key={`${e.start}${slotStart}${e.title}${i}`}
-        style={eventStyle(e)}
-        className={`evnet-basic-slot ${
-          isEventStartOnSlot(e, slotStart) ? 'event-start-slot' : ''
-        } ${isEventEndOnSlot(e, slotStart) ? 'event-end-slot' : ''}`}
-        onMouseDown={event => {
-          event.stopPropagation()
-          onClickEvent(omit(e, 'calprops'))
-        }}
-      >
-        {' '}
-        {showEventData(e, slotStart, disabledHours) && (
-          <div
-            className={'title-box-day-wk'}
-            style={{
-              height: `${getHightEventDetails(
-                e.start,
-                e.end,
-                slotStart,
-                disabledHours
-              )}px`,
-              paddingLeft: '2%',
-              paddingTop: '1%'
-            }}
-          >
-            {getEventTime(e, slotStart, disabledHours)},{e.title}
-          </div>
-        )}
-      </div>
-    )
-  }
   return (
     <div {...rest} onMouseOver={onMouseOver} id={id}>
       {ifSlotSelected(slotStart, selectedWindow) &&
@@ -153,18 +117,50 @@ const HalfAnHourSlot = ({
         <div>
           {eventsOfTheSlot.map((e, i) => {
             return (
-              <Popup
-                position={'top left'}
-                disabled={!isEmpty(selectedWindow)}
-                className='popup-box'
-                content={e.title}
-                key={`${e.title}-${e.start.toString()}-${e.end.toString()}`}
-                header={`${format(e.start, 'dd/MM/yy HH:mm')} - ${format(
-                  e.end,
-                  'dd/MM/yy HH:mm'
-                )}`}
-                trigger={event(e, i)}
-              />
+              <div key={`${e.title}${i}`}>
+                <ReactTooltip
+                  id={`${e.title}${i}`}
+                  disable={!isEmpty(selectedWindow)}
+                >
+                  <b>{`${format(e.start, 'dd/MM/yy HH:mm')} - ${format(
+                    e.end,
+                    'dd/MM/yy HH:mm'
+                  )}`}</b>
+                  <p>{e.title}</p>
+                </ReactTooltip>
+                <div
+                  data-tip
+                  data-for={`${e.title}${i}`}
+                  onMouseOver={() => onMouseOver({ target: { id } })}
+                  style={eventStyle(e)}
+                  className={`evnet-basic-slot ${
+                    isEventStartOnSlot(e, slotStart) ? 'event-start-slot' : ''
+                  } ${isEventEndOnSlot(e, slotStart) ? 'event-end-slot' : ''}`}
+                  onMouseDown={event => {
+                    event.stopPropagation()
+                    onClickEvent(omit(e, 'calprops'))
+                  }}
+                >
+                  {' '}
+                  {showEventData(e, slotStart, disabledHours) && (
+                    <div
+                      className={'title-box-day-wk'}
+                      style={{
+                        height: `${getHightEventDetails(
+                          e.start,
+                          e.end,
+                          slotStart,
+                          disabledHours
+                        )}px`,
+                        paddingLeft: '2%',
+                        paddingTop: '1%'
+                      }}
+                    >
+                      {getEventTime(e, slotStart, disabledHours)},{e.title}
+                    </div>
+                  )}
+                </div>
+              </div>
             )
           })}
         </div>

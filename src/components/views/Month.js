@@ -10,9 +10,10 @@ import {
   isValid,
   format
 } from 'date-fns'
-import { Grid, GridColumn, GridRow, Popup } from 'semantic-ui-react'
+import { Grid, GridColumn, GridRow } from 'semantic-ui-react'
 import { getDate } from 'date-fns/esm'
 import { isEmpty, get, omit, sortBy, cloneDeep } from 'lodash'
+import ReactTooltip from 'react-tooltip'
 
 import WeekRow from '../week-row/WeekRow'
 import { CalContext } from '../../context/Context'
@@ -25,8 +26,7 @@ import {
   isEventEndOnDay,
   ifDayIsInDisabledArray,
   getEventWithIndex,
-  getHighestIndex,
-  invertColor
+  getHighestIndex
 } from '../utils'
 
 const Month = ({
@@ -191,33 +191,32 @@ const Month = ({
                         style={getEventStyle(e, day)}
                       >
                         {showEvent(e, day, disabledDays) && (
-                          <Popup
-                            disabled={!isEmpty(selectedWindow)}
-                            className='popup-box'
-                            content={e.title}
-                            key={`${
-                              e.title
-                            }-${e.start.toString()}-${e.end.toString()}`}
-                            header={`${format(
-                              e.start,
-                              'dd/MM/yy HH:mm'
-                            )} - ${format(e.end, 'dd/MM/yy HH:mm')}`}
-                            trigger={
-                              <div
-                                className={'event-title-month'}
-                                style={{
-                                  width: `${getEventWidth(
-                                    day,
-                                    e,
-                                    dayWidth,
-                                    disabledDays
-                                  )}px`
-                                }}
-                              >
-                                {e.title}
-                              </div>
-                            }
-                          />
+                          <div
+                            data-tip
+                            data-for={`${e.title}${i}`}
+                            key={`${e.title}${i}`}
+                            className={'event-title-month'}
+                            style={{
+                              width: `${getEventWidth(
+                                day,
+                                e,
+                                dayWidth,
+                                disabledDays
+                              )}px`
+                            }}
+                          >
+                            <ReactTooltip
+                              id={`${e.title}${i}`}
+                              disable={!isEmpty(selectedWindow)}
+                            >
+                              <b>{`${format(
+                                e.start,
+                                'dd/MM/yy HH:mm'
+                              )} - ${format(e.end, 'dd/MM/yy HH:mm')}`}</b>
+                              <p>{e.title}</p>
+                            </ReactTooltip>
+                            {e.title}
+                          </div>
                         )}
                       </div>
                     )
