@@ -21,7 +21,17 @@ import {
   subDays,
   subMinutes
 } from 'date-fns'
-import { isEmpty, includes, flow, indexOf, compact, sortBy } from 'lodash'
+import {
+  isEmpty,
+  includes,
+  flow,
+  indexOf,
+  compact,
+  sortBy,
+  range,
+  find,
+  get
+} from 'lodash'
 
 export const daysInWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
@@ -94,71 +104,37 @@ export const getEventsOfTheDay = (day, events) => {
   })
 }
 
-export const getEventIndex = events => {
-  if (events.length === 0) return events
-  let tmpEvents = [...events]
-  let finalEvents = []
-  while (tmpEvents.length > 0) {
-    const firstEvt = tmpEvents.splice(0, 1)[0]
-    firstEvt.calprops = {
-      position: 0
-    }
-    const overlappingEvent = tmpEvents.filter(e => {
-      return isWithinInterval(e.start, {
-        start: firstEvt.start,
-        end: firstEvt.end
-      })
-    })
-    let indexedEvents = []
-    overlappingEvent.map(e => {
-      if (indexedEvents.length > 0) {
-        const innerOverlappingEvent = indexedEvents.filter(indexedEvent => {
-          return isWithinInterval(e.start, {
-            start: indexedEvent.start,
-            end: indexedEvent.end
-          })
-        })
-        if (innerOverlappingEvent.length === 0) {
-          indexedEvents.push({
-            ...e,
-            calprops: {
-              position: 1
-            }
-          })
-        } else {
-          const maxPos = innerOverlappingEvent.reduce((prev, current) =>
-            prev.calprops.position > current.calprops.position ? prev : current
-          ).calprops.position
+export const getEventOfTheWindow = (events, window) => {
+  return events.filter(e => {
+    return (
+      isSameSecond(window.start, e.start) ||
+      (isAfter(window.start, e.start) &&
+        isBefore(window.start, e.end) &&
+        isAfter(window.end, e.start) &&
+        isBefore(window.end, e.end)) ||
+      (isAfter(e.start, window.start) && isBefore(e.start, window.end)) ||
+      (isAfter(e.end, window.start) && isBefore(e.end, window.end))
+    )
+  })
+}
 
-          indexedEvents.push({
-            ...e,
-            calprops: {
-              position: maxPos + 1
-            }
-          })
-        }
-      } else {
-        indexedEvents.push({
-          ...e,
-          calprops: {
-            position: 1
-          }
-        })
-      }
-      return null
-    })
-    finalEvents = [...finalEvents, firstEvt, ...indexedEvents]
-    tmpEvents.splice(0, overlappingEvent.length)
+export const getEventIndex = (events, day) => {
+  let time = day
+  while (isBefore(time, endOfDay(day))) {
+    const eventOfTheSlot = getEventOfTheSlot(time, events)
+    if (!isEmpty(eventOfTheSlot)) {
+      getEventWithIndex(eventOfTheSlot)
+    }
+    time = addMinutes(time, 30)
   }
-  return finalEvents
 }
 
 export const getHighestIndex = e => {
   return isEmpty(e)
-    ? 1
+    ? 0
     : e.reduce((prev, current) =>
         prev.calprops.position > current.calprops.position ? prev : current
-      ).calprops.position + 1
+      ).calprops.position
 }
 
 export const getEventOfTheSlot = (slotStart, events) => {
@@ -399,4 +375,60 @@ export const isEventEndOnSlot = (e, slotStart) => {
       end: addMinutes(slotStart, 30)
     })
   )
+}
+
+export const getEventWithIndex = events => {
+  const eventsWithIndex = []
+  const getHighestIndex = events => {
+    return get(
+      events.reduce((prev, current) =>
+        get(prev, 'calprops.position', 0) > get(current, 'calprops.position', 0)
+          ? prev
+          : current
+      ),
+      'calprops.position',
+      0
+    )
+  }
+
+  events.forEach((e, i) => {
+    if (e.calprops.position) {
+      eventsWithIndex.push(e)
+    } else if (eventsWithIndex.length === 0) {
+      e.calprops.position = 0
+      eventsWithIndex.push(e)
+    } else if (
+      eventsWithIndex.length === i &&
+      getHighestIndex(eventsWithIndex) + 1 === i
+    ) {
+      e.calprops.position = i
+      eventsWithIndex.push(e)
+    } else if (getHighestIndex(eventsWithIndex) >= i) {
+      const missingIndex = range(eventsWithIndex.length).filter((e, i) => {
+        return !find(eventsWithIndex, iE => {
+          return iE.calprops.position === e
+        })
+      })
+      e.calprops.position = missingIndex[0]
+      eventsWithIndex.push(e)
+    }
+  })
+}
+
+export const getRandomColor = () => {
+  const letters = '0123456789ABCDEF'
+  let color = '#'
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)]
+  }
+  return color
+}
+
+export const invertColor = hexcolor => {
+  const color = hexcolor.substring(1)
+  const r = parseInt(color.substr(0, 2), 16)
+  const g = parseInt(color.substr(2, 2), 16)
+  const b = parseInt(color.substr(4, 2), 16)
+  const yiq = (r * 299 + g * 587 + b * 114) / 1000
+  return yiq >= 128 ? 'black' : 'white'
 }

@@ -1,17 +1,16 @@
 import React, { useContext, useState } from 'react'
 import { Grid, GridRow, GridColumn } from 'semantic-ui-react'
+import { addMinutes, isBefore, isSameDay, endOfMinute, isValid } from 'date-fns'
+import { isEmpty, sortBy, cloneDeep } from 'lodash'
 
 import TimeSlotsInDay from '../time-slots-in-day/TimeSlotsInDay'
 import { CalContext } from '../../context/Context'
-
 import {
   timeSlots,
   getEventsOfTheDay,
   getEventIndex,
   getHighestIndex
 } from '../utils'
-import { addMinutes, isBefore, isSameDay, endOfMinute, isValid } from 'date-fns'
-import { isEmpty, sortBy } from 'lodash'
 
 const Day = ({
   currentTime,
@@ -64,10 +63,15 @@ const Day = ({
   const onClickEvent = e => {
     onClickedEvent(e)
   }
-  const sortedEvents = sortBy(events, 'start')
-  const eventsOfTheDay = getEventsOfTheDay(viewWindow.start, sortedEvents)
-  const eventWithIndex = getEventIndex(eventsOfTheDay)
-  const highestIndex = getHighestIndex(eventWithIndex)
+  const mutableEvents = cloneDeep(events)
+  const eventsOfTheDay = sortBy(
+    getEventsOfTheDay(viewWindow.start, mutableEvents),
+    'start'
+  )
+  if (!isEmpty(eventsOfTheDay)) {
+    getEventIndex(sortBy(eventsOfTheDay, 'start'), viewWindow.start)
+  }
+  const highestIndex = getHighestIndex(eventsOfTheDay)
 
   return (
     <Grid>
@@ -100,7 +104,7 @@ const Day = ({
             onMouseClick={onMouseClick}
             onMouseOver={onMouseOver}
             onMouseUp={onMouseUp}
-            events={eventWithIndex}
+            events={eventsOfTheDay}
             onClickEvent={onClickEvent}
             highestIndex={highestIndex}
             disabledDays={disabledDays}

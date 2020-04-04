@@ -12,7 +12,7 @@ import {
 } from 'date-fns'
 import { Grid, GridColumn, GridRow, Popup } from 'semantic-ui-react'
 import { getDate } from 'date-fns/esm'
-import { isEmpty, sortBy, slice, get, omit } from 'lodash'
+import { isEmpty, get, omit, sortBy, cloneDeep } from 'lodash'
 
 import WeekRow from '../week-row/WeekRow'
 import { CalContext } from '../../context/Context'
@@ -23,7 +23,10 @@ import {
   showEvent,
   isEventStartOnDay,
   isEventEndOnDay,
-  ifDayIsInDisabledArray
+  ifDayIsInDisabledArray,
+  getEventWithIndex,
+  getHighestIndex,
+  invertColor
 } from '../utils'
 
 const Month = ({
@@ -35,10 +38,8 @@ const Month = ({
 }) => {
   const { viewWindow, setViewWindow, setView } = useContext(CalContext)
   const [dayWidth, setDayWidth] = useState(0)
-  const eachDay = eachDayOfInterval({
-    start: viewWindow.start,
-    end: viewWindow.end
-  })
+  const eachDay = eachDayOfInterval({ ...viewWindow })
+
   const [selectedWindow, setSelectedWindow] = useState({})
   const onMouseClick = e => {
     e.preventDefault()
@@ -110,7 +111,6 @@ const Month = ({
           isBefore(slotStart, selectedWindow.end)))
     )
   }
-  const sortedEvents = sortBy(events, 'start')
 
   const onMoreClicked = day => {
     setViewWindow({ start: startOfDay(day), end: endOfDay(day) })
@@ -121,14 +121,38 @@ const Month = ({
     onClickedEvent(e)
   }
 
+  const getEventStyle = (e, day) => {
+    return {
+      width: !isSameDay(e.end, day) ? '102%' : '92%',
+      backgroundColor: e.calprops.bgColor,
+      top: `${(150 / 4) * e.calprops.position + 10}px`,
+      color: e.calprops.color
+    }
+  }
+  const mutableEvents = cloneDeep(events)
+
   return (
     <Grid columns={7}>
       <WeekRow />
       <GridRow className={'pt-0'}>
         {eachDay.map(day => {
           const date = getDate(day)
-          const eventsOfTheDay = getEventsOfTheDay(day, sortedEvents)
-          const firstTwoEvents = slice(eventsOfTheDay, 0, 2)
+          const eventsOfTheDay = sortBy(
+            getEventsOfTheDay(day, mutableEvents),
+            'start'
+          )
+          if (!isEmpty(eventsOfTheDay)) {
+            getEventWithIndex(eventsOfTheDay)
+          }
+          const heighestIndex =
+            getHighestIndex(eventsOfTheDay) <= 2
+              ? getHighestIndex(eventsOfTheDay)
+              : 1
+
+          const eventToShow = eventsOfTheDay.filter(
+            e => e.calprops.position <= heighestIndex
+          )
+          const remainingEvents = eventsOfTheDay.length - eventToShow.length
           return (
             <GridColumn
               as={'div'}
@@ -137,23 +161,23 @@ const Month = ({
               className={`p-0 month-day ${
                 isDayDisabled(day, disabledDays, currentTime) ? 'disable' : ''
               }
-              ${
-                ifSlotSelected(startOfDay(day)) &&
-                !isDayDisabled(day, disabledDays, currentTime)
-                  ? 'selected'
-                  : isSameDay(day, new Date())
-                  ? 'same-day-month'
-                  : ''
-              }
-              `}
+                ${
+                  ifSlotSelected(startOfDay(day)) &&
+                  !isDayDisabled(day, disabledDays, currentTime)
+                    ? 'selected'
+                    : isSameDay(day, new Date())
+                    ? 'same-day-month'
+                    : ''
+                }
+                `}
               onMouseDown={onMouseClick}
               onMouseOver={onMouseOver}
               onMouseUp={onMouseUp}
             >
               <b>{date < 10 ? `0${date}` : date}</b>
               {!ifDayIsInDisabledArray(disabledDays, day) && (
-                <div>
-                  {firstTwoEvents.map((e, i) => {
+                <div className='relative'>
+                  {eventToShow.map((e, i) => {
                     return (
                       <div
                         onMouseDown={event => {
@@ -164,6 +188,7 @@ const Month = ({
                           isEventStartOnDay(e, day) ? 'event-start' : ''
                         } ${isEventEndOnDay(e, day) ? 'event-end' : ''}`}
                         key={`${e.title + i}`}
+                        style={getEventStyle(e, day)}
                       >
                         {showEvent(e, day, disabledDays) && (
                           <Popup
@@ -199,7 +224,7 @@ const Month = ({
                   })}
                 </div>
               )}
-              {eventsOfTheDay.length > 2 && (
+              {remainingEvents > 0 && (
                 <div
                   className={'more-events-link'}
                   onMouseDown={event => {
@@ -207,12 +232,13 @@ const Month = ({
                     onMoreClicked(day)
                   }}
                 >
-                  + {eventsOfTheDay.length - 2} more events
+                  + {remainingEvents} more events
                 </div>
               )}
             </GridColumn>
           )
         })}
+        )}
       </GridRow>
     </Grid>
   )

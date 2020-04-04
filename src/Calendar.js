@@ -1,37 +1,55 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Container } from 'semantic-ui-react'
 import { Context } from './context/Context'
 import Nav from './components/nav/Nav'
 import Views from './components/views/IndexView'
-import { useInterval } from 'react-use'
 
 import 'semantic-ui-css/semantic.min.css'
 import './style/styles.css'
+import { getRandomColor, invertColor } from './components/utils'
 
 function Calendar({
   events = [
-    // {
-    //   start: new Date('2020-03-30T19:50:00+03:00'),
-    //   end: new Date('2020-03-30T20:10:00+03:00'),
-    //   title: 'This is a event on mac sdsdfg asdfas asdfsa asfa asdfa asdfasdf'
-    // },
-    // {
-    //   start: new Date('2020-03-29T22:50:00+03:00'),
-    //   end: new Date('2020-03-29T23:10:00+03:00'),
-    //   title:
-    //     'This is a event on mac sdsdfg asdfasasdf  asdfsa asfa asdfa asdfasdf'
-    // },
     {
       start: new Date('2020-04-06T11:50:00+03:00'),
-      end: new Date('2020-04-06T17:30:00+03:00'),
-      title:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum"
+      end: new Date('2020-04-06T12:30:00+03:00'),
+      title: 'A Lorem Ipsum is simply'
+    },
+
+    {
+      start: new Date('2020-04-09T12:50:00+03:00'),
+      end: new Date('2020-04-11T14:30:00+03:00'),
+      title: 'E Lorem Ipsum is simply '
     },
     {
-      start: new Date('2020-04-06T11:50:00+03:00'),
-      end: new Date('2020-04-07T17:30:00+03:00'),
-      title:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum"
+      start: new Date('2020-04-08T12:50:00+03:00'),
+      end: new Date('2020-04-10T14:30:00+03:00'),
+      title: 'B Lorem Ipsum is simply '
+    },
+    {
+      start: new Date('2020-04-06T13:50:00+03:00'),
+      end: new Date('2020-04-06T15:30:00+03:00'),
+      title: 'C Lorem Ipsum is simply '
+    },
+    {
+      start: new Date('2020-04-14T11:50:00+03:00'),
+      end: new Date('2020-04-15T17:30:00+03:00'),
+      title: 'D Lorem Ipsum is simply '
+    },
+    {
+      start: new Date('2020-04-15T11:50:00+03:00'),
+      end: new Date('2020-04-25T17:30:00+03:00'),
+      title: 'Z Lorem Ipsum is simply '
+    },
+    {
+      start: new Date('2020-04-15T11:50:00+03:00'),
+      end: new Date('2020-04-16T17:30:00+03:00'),
+      title: 'F Lorem Ipsum is simply '
+    },
+    {
+      start: new Date('2020-04-16T11:50:00+03:00'),
+      end: new Date('2020-04-17T17:30:00+03:00'),
+      title: 'G Lorem Ipsum is simply '
     }
   ]
 }) {
@@ -43,18 +61,22 @@ function Calendar({
   }
   const onNavigation = () => {}
   const onViewChange = () => {}
-  const [currentTime, setCurrentTime] = useState(new Date())
-  useInterval(() => {
-    setCurrentTime(new Date())
-  }, 5 * 60 * 1000)
-
+  const coloredEvent = events.map(e => {
+    const color = getRandomColor()
+    return {
+      ...e,
+      calprops: {
+        bgColor: color,
+        color: invertColor(color)
+      }
+    }
+  })
   return (
-    <Context defaultView={'month'}>
+    <Context defaultView={'week'}>
       <Container className='mt-5'>
         <Nav onNavigation={onNavigation} onViewChange={onViewChange} />
         <Views
-          currentTime={currentTime}
-          events={events}
+          events={coloredEvent}
           onSelect={onSelect}
           onClickedEvent={onClickedEvent}
           disabledDays={['Sun']}

@@ -26,6 +26,10 @@
 .p-1 {
   padding: 1px !important;
 }
+
+.relative {
+  position: relative;
+}
 .nav-btn {
   width: 100% !important;
   padding-left: 0 !important;
@@ -183,20 +187,21 @@
   height: 32px;
   padding: 5px;
   margin-bottom: 5px;
-  margin-right: -2px;
   margin-left: -2px;
   font-weight: bold;
   pointer-events: all;
   cursor: pointer;
+  position: absolute;
+  width: 92%;
 }
 
 .event-start {
-  margin-left: 5px;
+  margin-left: 4%;
   border-bottom-left-radius: 4px;
   border-top-left-radius: 4px;
 }
 .event-end {
-  margin-right: 5px;
+  margin-right: 4%;
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
 }
@@ -208,6 +213,7 @@
   font-weight: bold;
   cursor: pointer;
   pointer-events: all;
+  margin-top: 90px;
 }
 
 .evnet-basic-slot {

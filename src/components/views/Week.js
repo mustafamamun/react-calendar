@@ -4,11 +4,10 @@ import {
   addMinutes,
   isBefore,
   isSameDay,
-  startOfDay,
   endOfMinute,
   isValid
 } from 'date-fns'
-import { isEmpty, sortBy } from 'lodash'
+import { isEmpty, cloneDeep, sortBy } from 'lodash'
 
 import { CalContext } from '../../context/Context'
 import WeekRowWithDate from '../week-row/WeekRowWithDate'
@@ -75,6 +74,8 @@ const Week = ({
   const onClickEvent = e => {
     onClickedEvent(e)
   }
+  const mutableEvents = cloneDeep(events)
+
   return (
     <Grid columns={8}>
       <WeekRowWithDate allDates={eachDayInWeek} />
@@ -89,9 +90,14 @@ const Week = ({
           })}
         </GridColumn>
         {eachDayInWeek.map(day => {
-          const eventsOfTheDay = getEventsOfTheDay(startOfDay(day), events)
-          const eventWithIndex = getEventIndex(sortBy(eventsOfTheDay, 'start'))
-          const highestIndex = getHighestIndex(eventWithIndex)
+          const eventsOfTheDay = sortBy(
+            getEventsOfTheDay(day, mutableEvents),
+            'start'
+          )
+          if (!isEmpty(eventsOfTheDay)) {
+            getEventIndex(sortBy(eventsOfTheDay, 'start'), day)
+          }
+          const highestIndex = getHighestIndex(eventsOfTheDay)
           return (
             <GridColumn
               key={day.toISOString()}
@@ -106,7 +112,7 @@ const Week = ({
                 onMouseClick={onMouseClick}
                 onMouseOver={onMouseOver}
                 onMouseUp={onMouseUp}
-                events={eventWithIndex}
+                events={eventsOfTheDay}
                 onClickEvent={onClickEvent}
                 highestIndex={highestIndex}
                 disabledDays={disabledDays}
